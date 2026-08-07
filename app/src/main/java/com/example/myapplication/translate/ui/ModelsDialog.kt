@@ -96,29 +96,27 @@ private fun ModelRow(
     onCancelDownload: () -> Unit,
     onDelete: () -> Unit,
 ) {
-    val installed = state is ModelDownloader.State.Installed
-
     Row(
         // The whole row is the tap target, not just the radio circle. A ~20dp hit area next to a
         // full-width label is a trap: tapping the model name looks like selecting it and does
         // nothing. `selectable` also gives the row the right accessibility role.
+        //
+        // Selectable whether or not it is installed: choosing which model you want is what you do
+        // *before* downloading it, and gating selection on installation left both rows dead on a
+        // fresh install, with no way to pick the other one.
         Modifier
             .fillMaxWidth()
             .selectable(
                 selected = isActive,
-                enabled = installed,
                 role = Role.RadioButton,
                 onClick = onSelect,
             )
             .padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        // Only an installed variant can be selected; a radio button on a missing model would
-        // promise something the app cannot deliver.
         RadioButton(
             selected = isActive,
             onClick = null, // handled by the row
-            enabled = installed,
         )
         Column(Modifier.fillMaxWidth()) {
             Text(

@@ -286,10 +286,17 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
                 _state.update {
                     it.copy(modelStates = it.modelStates + (variant to downloadState))
                 }
-                if (downloadState is ModelDownloader.State.Installed &&
-                    variant == _state.value.activeVariant
-                ) {
-                    useRealEngine(variant, force = true)
+                if (downloadState is ModelDownloader.State.Installed) {
+                    val active = _state.value.activeVariant
+                    when {
+                        variant == active -> useRealEngine(variant, force = true)
+
+                        // Adopt whatever just arrived when the selected variant has no weights of
+                        // its own. Downloading the model you want and then finding the app still
+                        // unusable, because a different variant was selected, is not a state worth
+                        // making the user reason about.
+                        !modelDownloader.isInstalled(active) -> onSelectModel(variant)
+                    }
                 }
             }
         }
