@@ -1,0 +1,13 @@
+<resources>
+    <!--
+      Compose supplies the real theming; this only needs to give the window a sane
+      background and no action bar before the first frame is drawn.
+    -->
+    <style name="Theme.MyApplication" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/surface_bar</item>
+        <item name="android:navigationBarColor">@color/surface_bar</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowBackground">@color/white</item>
+    </style>
+</resources>

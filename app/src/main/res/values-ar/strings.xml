@@ -1,0 +1,88 @@
+<resources>
+    <string name="cd_swap_languages">تبديل اللغتين</string>
+    <string name="cd_start_recording">بدء التسجيل</string>
+    <string name="cd_stop_recording">إيقاف التسجيل</string>
+    <string name="cd_speak_again">قراءة هذا النص مرة أخرى</string>
+    <string name="cd_copy_text">نسخ هذا النص</string>
+    <string name="cd_copied">تم النسخ</string>
+    <string name="cd_flip_upper">تدوير اللوحة العلوية ١٨٠ درجة</string>
+    <string name="cd_restore_layout">استعادة التخطيط الافتراضي</string>
+    <string name="cd_type_text">اكتب نصًا للترجمة</string>
+    <string name="cd_send_text">ترجمة النص المكتوب</string>
+    <string name="cd_take_photo">التقاط صورة للترجمة</string>
+    <string name="cd_pick_photo">اختيار صورة للترجمة</string>
+    <string name="cd_load_model">تحميل النموذج</string>
+    <string name="cd_unload_model">إخلاء النموذج من الذاكرة</string>
+    <string name="hint_type_text">اكتب النص المراد ترجمته</string>
+
+    <string name="status_mic_permission">الترجمة تتطلب إذن الميكروفون</string>
+    <string name="status_recording">جارٍ التسجيل… اضغط إيقاف عند انتهائك من الكلام</string>
+    <string name="status_translating">جارٍ التفريغ والترجمة… اضغط إيقاف للإلغاء</string>
+    <string name="status_speaking">جارٍ القراءة… اضغط إيقاف للإلغاء</string>
+    <string name="status_loading_model">جارٍ تحميل %1$s…</string>
+    <string name="status_model_loaded">تم تحميل %1$s · %2$s</string>
+    <string name="status_demo_engine">تم تحميل المحرك التجريبي</string>
+    <string name="status_model_not_loaded">النموذج غير محمّل — اضغط أيقونة التحميل</string>
+    <string name="status_unknown_backend">محرك غير معروف</string>
+
+    <string name="banner_model_missing">نموذج الترجمة غير مثبّت</string>
+    <string name="banner_downloading">جارٍ تنزيل %1$s · %2$s من %3$s</string>
+    <string name="action_download">تنزيل</string>
+    <string name="action_cancel">إلغاء</string>
+    <string name="action_retry">إعادة المحاولة</string>
+
+    <string name="msg_cancelled">تم الإلغاء</string>
+    <string name="msg_model_unloaded">تم إخلاء النموذج</string>
+    <string name="msg_model_unloaded_memory">تم إخلاء النموذج لتحرير الذاكرة</string>
+    <string name="msg_engine_unavailable">محرك الترجمة غير متاح</string>
+    <string name="msg_no_translation">لم تُنتَج أي ترجمة</string>
+    <string name="msg_no_text_in_image">لم يُعثر على نص في الصورة</string>
+    <string name="msg_cannot_read_image">تعذّرت قراءة هذه الصورة</string>
+    <string name="msg_clipboard_unavailable">الحافظة غير متاحة</string>
+    <string name="msg_playback_failed">فشل التشغيل</string>
+    <string name="msg_last_crash">آخر تعطّل: %1$s</string>
+
+    <string name="err_speech_unavailable">التعرّف على الكلام غير متاح على هذا الجهاز</string>
+    <string name="err_speech_start">تعذّر بدء الاستماع</string>
+    <string name="err_no_match">لم أفهم ذلك</string>
+    <string name="err_mic">خطأ في الميكروفون</string>
+    <string name="err_mic_permission">تم رفض إذن الميكروفون</string>
+    <string name="err_language_pack">نموذج الكلام لهذه اللغة غير مثبّت</string>
+    <string name="err_recognizer_busy">أداة التعرّف مشغولة، حاول مرة أخرى</string>
+    <string name="err_recognition_service">خطأ في خدمة التعرّف على الكلام</string>
+    <string name="err_speech_timeout">لم يُسمع أي كلام</string>
+    <string name="err_recognition_cancelled">تم إلغاء التعرّف</string>
+    <string name="err_recognition_generic">فشل التعرّف على الكلام (%1$d)</string>
+
+    <string name="err_tts_unavailable">محرك تحويل النص إلى كلام غير متاح</string>
+    <string name="err_tts_voice_missing">بيانات الصوت للغة %1$s غير مثبّتة</string>
+    <string name="err_tts_unsupported">محرك تحويل النص إلى كلام لا يدعم %1$s</string>
+    <string name="err_tts_start">تعذّر بدء التشغيل</string>
+
+    <string name="err_download_space">لا توجد مساحة كافية لهذا النموذج</string>
+    <string name="err_download_storage">وحدة التخزين غير متاحة</string>
+    <string name="err_download_network">حدث خطأ في الشبكة أثناء التنزيل</string>
+    <string name="err_download_resume">تعذّر استئناف التنزيل، ابدأ من جديد</string>
+    <string name="err_download_file">تعذّرت كتابة ملف النموذج</string>
+    <string name="err_download_save">تعذّر حفظ النموذج</string>
+    <string name="err_download_generic">فشل التنزيل (%1$d)</string>
+    <string name="err_download_all_sources">فشلت جميع مصادر التنزيل. تحقّق من اتصالك وحاول مرة أخرى.</string>
+    <string name="cd_donate">ادعم هذا التطبيق</string>
+    <string name="donate_title">ادعم Aire Offline Translate</string>
+    <string name="donate_body">‏Aire Offline Translate مجاني ويعمل بالكامل على جهازك. إذا كان مفيدًا لك، فإن مساهمة لمرة واحدة تساعد على استمرار صيانته.</string>
+    <string name="donate_thanks">شكرًا لك — هذا يساعد فعلًا.</string>
+    <string name="donate_unavailable">خيارات التبرع غير متاحة حاليًا. تتطلب تثبيت التطبيق من Google Play.</string>
+    <string name="action_close">إغلاق</string>
+    <string name="cd_close_input">إغلاق إدخال النص</string>
+    <string name="cd_cancel_run">إلغاء</string>
+    <string name="action_models">النماذج</string>
+    <string name="action_delete">حذف</string>
+    <string name="banner_wifi_only">عبر Wi‑Fi فقط</string>
+    <string name="notif_downloading_model">جارٍ تنزيل نموذج الترجمة</string>
+    <string name="models_title">نماذج الترجمة</string>
+    <string name="models_body">كلاهما يعمل بالكامل على جهازك. التنزيل عبر Wi‑Fi فقط.</string>
+    <string name="models_e4b_note">%1$s · أفضل جودة، يتطلب ٨ غيغابايت من الذاكرة أو أكثر</string>
+    <string name="models_e2b_note">%1$s · أصغر وأسرع، للأجهزة ذات الذاكرة الأقل</string>
+    <string name="msg_model_deleted">تم حذف %1$s</string>
+    <string name="cd_models">نماذج الترجمة</string>
+</resources>

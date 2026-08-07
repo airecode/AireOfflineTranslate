@@ -1,0 +1,71 @@
+Aire Offline Translate
+Copyright 2026 The Aire Offline Translate Authors
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License in the accompanying LICENSE file or at:
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+
+================================================================================
+Third-party components
+================================================================================
+
+Some vector drawables in app/src/main/res/drawable/ are derived from the
+Material Design icon set by Google (ic_mic, ic_stop, ic_swap_horiz, ic_copy,
+ic_check, ic_volume_up, ic_camera, ic_gallery, ic_keyboard, ic_send, ic_donate,
+ic_model_load, ic_model_unload). The Material Design icon set is licensed under
+the Apache License, Version 2.0.
+
+    https://github.com/google/material-design-icons
+
+The launcher icon and the split-panel and document glyphs (ic_launcher_*,
+ic_flip, ic_restore) are original to this project.
+
+The following libraries are used and are licensed under the Apache License,
+Version 2.0:
+
+    LiteRT-LM                    com.google.ai.edge.litertlm
+    AndroidX / Jetpack Compose   androidx.*
+    kotlinx.coroutines           org.jetbrains.kotlinx
+
+The Google Play Billing Library (com.android.billingclient) is distributed by
+Google under the Android Software Development Kit License Agreement, not under
+the Apache License. It is a build dependency of this project and is not
+redistributed as part of this source repository.
+
+    https://developer.android.com/studio/terms
+
+
+================================================================================
+Model weights are NOT covered by this licence
+================================================================================
+
+This repository contains no model weights. Gemma 4 E4B (~3.66 GB) is downloaded
+by the app at runtime from Hugging Face and is licensed separately from this
+source code. The Apache 2.0 licence above applies to this application's source
+only; it grants you no rights whatsoever to the model.
+
+    https://huggingface.co/litert-community/gemma-4-E4B-it-litert-lm
+
+Verify the model's terms yourself before relying on them, particularly for
+commercial use or redistribution. At the time of writing that repository
+declares apache-2.0 in its metadata and is not access-gated, but Gemma weights
+published by Google generally carry the Gemma Terms of Use together with a
+Prohibited Use Policy, which impose obligations Apache 2.0 does not — including
+restrictions on use and a requirement to pass those terms on to downstream
+recipients. Repository metadata is not a substitute for the model licence
+itself.
+
+    https://ai.google.dev/gemma/terms
+    https://ai.google.dev/gemma/prohibited_use_policy
+
+
+================================================================================
+Trademarks
+================================================================================
+
+Android, Google Play, Gemma and the Google logo are trademarks of Google LLC.
+Use of this source code does not grant any right to use those marks. If you
+publish a derivative of this app, use your own name, icon and store listing.

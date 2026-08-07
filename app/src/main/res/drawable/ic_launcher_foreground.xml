@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Two speech bubbles rotated 180° about the centre — the same mirror the conversation screen uses,
+  where one half faces each speaker. Geometry stays within ~36 units of centre so a circular
+  launcher mask does not clip it.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Upper bubble, tail pointing down-left. -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M34,30 H62 A6,6 0 0 1 68,36 V44 A6,6 0 0 1 62,50 H34 A6,6 0 0 1 28,44 V36 A6,6 0 0 1 34,30 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M34,50 L34,59 L44,50 Z" />
+
+    <!-- Lower bubble: the same shape rotated 180°, tail pointing up-right. -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M46,58 H74 A6,6 0 0 1 80,64 V72 A6,6 0 0 1 74,78 H46 A6,6 0 0 1 40,72 V64 A6,6 0 0 1 46,58 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M74,58 L74,49 L64,58 Z" />
+
+    <!-- Text lines, mirrored between the two bubbles. -->
+    <path
+        android:fillColor="#4A2E8C"
+        android:pathData="M34,36 h28 v3 h-28 z" />
+    <path
+        android:fillColor="#4A2E8C"
+        android:pathData="M34,42 h20 v3 h-20 z" />
+    <path
+        android:fillColor="#4A2E8C"
+        android:pathData="M54,63 h20 v3 h-20 z" />
+    <path
+        android:fillColor="#4A2E8C"
+        android:pathData="M46,69 h28 v3 h-28 z" />
+</vector>

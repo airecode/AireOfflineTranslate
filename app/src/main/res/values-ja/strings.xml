@@ -1,0 +1,88 @@
+<resources>
+    <string name="cd_swap_languages">言語を入れ替える</string>
+    <string name="cd_start_recording">録音を開始</string>
+    <string name="cd_stop_recording">録音を停止</string>
+    <string name="cd_speak_again">このテキストをもう一度読み上げる</string>
+    <string name="cd_copy_text">このテキストをコピー</string>
+    <string name="cd_copied">コピーしました</string>
+    <string name="cd_flip_upper">上のパネルを180度回転</string>
+    <string name="cd_restore_layout">既定のレイアウトに戻す</string>
+    <string name="cd_type_text">翻訳するテキストを入力</string>
+    <string name="cd_send_text">入力したテキストを翻訳</string>
+    <string name="cd_take_photo">写真を撮って翻訳</string>
+    <string name="cd_pick_photo">写真を選んで翻訳</string>
+    <string name="cd_load_model">モデルを読み込む</string>
+    <string name="cd_unload_model">モデルを解放する</string>
+    <string name="hint_type_text">翻訳するテキストを入力</string>
+
+    <string name="status_mic_permission">翻訳するにはマイクの許可が必要です</string>
+    <string name="status_recording">録音中…話し終えたら停止をタップ</string>
+    <string name="status_translating">文字起こしと翻訳中…停止でキャンセル</string>
+    <string name="status_speaking">読み上げ中…停止でキャンセル</string>
+    <string name="status_loading_model">%1$s を読み込み中…</string>
+    <string name="status_model_loaded">%1$s 読み込み済み · %2$s</string>
+    <string name="status_demo_engine">デモエンジンを読み込みました</string>
+    <string name="status_model_not_loaded">モデル未読み込み — 読み込みアイコンをタップ</string>
+    <string name="status_unknown_backend">不明なバックエンド</string>
+
+    <string name="banner_model_missing">翻訳モデルが未インストールです</string>
+    <string name="banner_downloading">%1$s をダウンロード中 · %2$s / %3$s</string>
+    <string name="action_download">ダウンロード</string>
+    <string name="action_cancel">キャンセル</string>
+    <string name="action_retry">再試行</string>
+
+    <string name="msg_cancelled">キャンセルしました</string>
+    <string name="msg_model_unloaded">モデルを解放しました</string>
+    <string name="msg_model_unloaded_memory">メモリ解放のためモデルを解放しました</string>
+    <string name="msg_engine_unavailable">翻訳エンジンを利用できません</string>
+    <string name="msg_no_translation">翻訳が生成されませんでした</string>
+    <string name="msg_no_text_in_image">画像から文字が見つかりませんでした</string>
+    <string name="msg_cannot_read_image">この画像を読み込めませんでした</string>
+    <string name="msg_clipboard_unavailable">クリップボードを利用できません</string>
+    <string name="msg_playback_failed">再生に失敗しました</string>
+    <string name="msg_last_crash">前回のクラッシュ: %1$s</string>
+
+    <string name="err_speech_unavailable">この端末では音声認識を利用できません</string>
+    <string name="err_speech_start">聞き取りを開始できませんでした</string>
+    <string name="err_no_match">聞き取れませんでした</string>
+    <string name="err_mic">マイクのエラー</string>
+    <string name="err_mic_permission">マイクの許可が拒否されました</string>
+    <string name="err_language_pack">この言語の音声モデルがインストールされていません</string>
+    <string name="err_recognizer_busy">認識エンジンが使用中です。再試行してください</string>
+    <string name="err_recognition_service">音声認識サービスのエラー</string>
+    <string name="err_speech_timeout">音声が検出されませんでした</string>
+    <string name="err_recognition_cancelled">認識をキャンセルしました</string>
+    <string name="err_recognition_generic">音声認識に失敗しました（%1$d）</string>
+
+    <string name="err_tts_unavailable">音声合成エンジンを利用できません</string>
+    <string name="err_tts_voice_missing">%1$s の音声データがインストールされていません</string>
+    <string name="err_tts_unsupported">音声合成エンジンは %1$s に対応していません</string>
+    <string name="err_tts_start">再生を開始できませんでした</string>
+
+    <string name="err_download_space">このモデルを保存する空き容量が足りません</string>
+    <string name="err_download_storage">ストレージを利用できません</string>
+    <string name="err_download_network">ダウンロード中にネットワークエラーが発生しました</string>
+    <string name="err_download_resume">ダウンロードを再開できません。最初からやり直してください</string>
+    <string name="err_download_file">モデルファイルを書き込めませんでした</string>
+    <string name="err_download_save">モデルを保存できませんでした</string>
+    <string name="err_download_generic">ダウンロードに失敗しました（%1$d）</string>
+    <string name="err_download_all_sources">すべてのダウンロード元で失敗しました。接続を確認して再試行してください。</string>
+    <string name="cd_donate">このアプリを支援する</string>
+    <string name="donate_title">Aire Offline Translate を支援</string>
+    <string name="donate_body">Aire Offline Translate は無料で、すべて端末内で動作します。お役に立てているなら、一度きりのご支援が開発の継続に役立ちます。</string>
+    <string name="donate_thanks">ありがとうございます。とても励みになります。</string>
+    <string name="donate_unavailable">現在、支援のオプションを利用できません。Google Play からインストールされたアプリが必要です。</string>
+    <string name="action_close">閉じる</string>
+    <string name="cd_close_input">テキスト入力を閉じる</string>
+    <string name="cd_cancel_run">キャンセル</string>
+    <string name="action_models">モデル</string>
+    <string name="action_delete">削除</string>
+    <string name="banner_wifi_only">Wi-Fi のみ</string>
+    <string name="notif_downloading_model">翻訳モデルをダウンロード中</string>
+    <string name="models_title">翻訳モデル</string>
+    <string name="models_body">どちらも端末内で完結します。ダウンロードは Wi-Fi のみです。</string>
+    <string name="models_e4b_note">%1$s · 最高品質、メモリ 8 GB 以上が必要</string>
+    <string name="models_e2b_note">%1$s · 小さく高速、メモリの少ない端末向け</string>
+    <string name="msg_model_deleted">%1$s を削除しました</string>
+    <string name="cd_models">翻訳モデル</string>
+</resources>

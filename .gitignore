@@ -1,0 +1,29 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# On-device model weights. Multi-GB and fetched separately; never committed.
+/models
+*.litertlm
+*.task
+
+# Signing material. A leaked upload key lets someone publish builds as you.
+*.jks
+*.keystore
+keystore.properties
+signing.properties
+
+# Claude Code machine-local settings. Contains absolute local paths.
+.claude/settings.local.json

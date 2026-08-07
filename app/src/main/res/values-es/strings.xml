@@ -1,0 +1,88 @@
+<resources>
+    <string name="cd_swap_languages">Intercambiar idiomas</string>
+    <string name="cd_start_recording">Empezar a grabar</string>
+    <string name="cd_stop_recording">Detener la grabación</string>
+    <string name="cd_speak_again">Leer este texto otra vez</string>
+    <string name="cd_copy_text">Copiar este texto</string>
+    <string name="cd_copied">Copiado</string>
+    <string name="cd_flip_upper">Girar el panel superior 180 grados</string>
+    <string name="cd_restore_layout">Restaurar el diseño predeterminado</string>
+    <string name="cd_type_text">Escribir texto para traducir</string>
+    <string name="cd_send_text">Traducir el texto escrito</string>
+    <string name="cd_take_photo">Hacer una foto para traducir</string>
+    <string name="cd_pick_photo">Elegir una foto para traducir</string>
+    <string name="cd_load_model">Cargar el modelo</string>
+    <string name="cd_unload_model">Descargar el modelo de la memoria</string>
+    <string name="hint_type_text">Escribe el texto que quieres traducir</string>
+
+    <string name="status_mic_permission">Se necesita permiso de micrófono para traducir</string>
+    <string name="status_recording">Grabando… toca detener cuando termines de hablar</string>
+    <string name="status_translating">Transcribiendo y traduciendo… toca detener para cancelar</string>
+    <string name="status_speaking">Reproduciendo… toca detener para cancelar</string>
+    <string name="status_loading_model">Cargando %1$s…</string>
+    <string name="status_model_loaded">%1$s cargado · %2$s</string>
+    <string name="status_demo_engine">Motor de demostración cargado</string>
+    <string name="status_model_not_loaded">Modelo no cargado: toca el icono de carga</string>
+    <string name="status_unknown_backend">motor desconocido</string>
+
+    <string name="banner_model_missing">El modelo de traducción no está instalado</string>
+    <string name="banner_downloading">Descargando %1$s · %2$s de %3$s</string>
+    <string name="action_download">Descargar</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_retry">Reintentar</string>
+
+    <string name="msg_cancelled">Cancelado</string>
+    <string name="msg_model_unloaded">Modelo liberado</string>
+    <string name="msg_model_unloaded_memory">Modelo liberado para recuperar memoria</string>
+    <string name="msg_engine_unavailable">El motor de traducción no está disponible</string>
+    <string name="msg_no_translation">No se generó ninguna traducción</string>
+    <string name="msg_no_text_in_image">No se encontró texto en la imagen</string>
+    <string name="msg_cannot_read_image">No se pudo leer esa imagen</string>
+    <string name="msg_clipboard_unavailable">El portapapeles no está disponible</string>
+    <string name="msg_playback_failed">Error de reproducción</string>
+    <string name="msg_last_crash">Último fallo: %1$s</string>
+
+    <string name="err_speech_unavailable">El reconocimiento de voz no está disponible en este dispositivo</string>
+    <string name="err_speech_start">No se pudo empezar a escuchar</string>
+    <string name="err_no_match">No se ha entendido</string>
+    <string name="err_mic">Error del micrófono</string>
+    <string name="err_mic_permission">Permiso de micrófono denegado</string>
+    <string name="err_language_pack">El modelo de voz de este idioma no está instalado</string>
+    <string name="err_recognizer_busy">El reconocedor está ocupado, inténtalo de nuevo</string>
+    <string name="err_recognition_service">Error del servicio de reconocimiento</string>
+    <string name="err_speech_timeout">No se ha detectado voz</string>
+    <string name="err_recognition_cancelled">Reconocimiento cancelado</string>
+    <string name="err_recognition_generic">Error de reconocimiento de voz (%1$d)</string>
+
+    <string name="err_tts_unavailable">El motor de texto a voz no está disponible</string>
+    <string name="err_tts_voice_missing">Los datos de voz de %1$s no están instalados</string>
+    <string name="err_tts_unsupported">El motor de texto a voz no admite %1$s</string>
+    <string name="err_tts_start">No se pudo iniciar la reproducción</string>
+
+    <string name="err_download_space">No hay espacio suficiente para este modelo</string>
+    <string name="err_download_storage">Almacenamiento no disponible</string>
+    <string name="err_download_network">Error de red durante la descarga</string>
+    <string name="err_download_resume">La descarga no pudo reanudarse; vuelve a empezar</string>
+    <string name="err_download_file">No se pudo escribir el archivo del modelo</string>
+    <string name="err_download_save">No se pudo guardar el modelo</string>
+    <string name="err_download_generic">Error de descarga (%1$d)</string>
+    <string name="err_download_all_sources">Fallaron todas las fuentes de descarga. Comprueba tu conexión e inténtalo de nuevo.</string>
+    <string name="cd_donate">Apoyar esta app</string>
+    <string name="donate_title">Apoya a Aire Offline Translate</string>
+    <string name="donate_body">Aire Offline Translate es gratuita y funciona por completo en tu dispositivo. Si te resulta útil, una aportación puntual ayuda a mantenerla.</string>
+    <string name="donate_thanks">Gracias, ayuda de verdad.</string>
+    <string name="donate_unavailable">Las opciones de donación no están disponibles ahora mismo. Requieren que la app se haya instalado desde Google Play.</string>
+    <string name="action_close">Cerrar</string>
+    <string name="cd_close_input">Cerrar la entrada de texto</string>
+    <string name="cd_cancel_run">Cancelar</string>
+    <string name="action_models">Modelos</string>
+    <string name="action_delete">Eliminar</string>
+    <string name="banner_wifi_only">solo por Wi-Fi</string>
+    <string name="notif_downloading_model">Descargando el modelo de traduccion</string>
+    <string name="models_title">Modelos de traduccion</string>
+    <string name="models_body">Ambos funcionan por completo en tu dispositivo. Las descargas usan solo Wi-Fi.</string>
+    <string name="models_e4b_note">%1$s · mejor calidad, necesita 8 GB de RAM o mas</string>
+    <string name="models_e2b_note">%1$s · mas pequeno y rapido, para dispositivos con menos memoria</string>
+    <string name="msg_model_deleted">%1$s eliminado</string>
+    <string name="cd_models">Modelos de traduccion</string>
+</resources>

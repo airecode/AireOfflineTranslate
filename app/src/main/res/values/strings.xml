@@ -1,0 +1,98 @@
+<resources>
+    <!-- Product name: a brand, deliberately not translated. -->
+    <string name="app_name" translatable="false">Aire Offline Translate</string>
+
+    <!-- Content descriptions -->
+    <string name="cd_swap_languages">Swap languages</string>
+    <string name="cd_start_recording">Start recording</string>
+    <string name="cd_stop_recording">Stop recording</string>
+    <string name="cd_speak_again">Read this text aloud again</string>
+    <string name="cd_copy_text">Copy this text</string>
+    <string name="cd_copied">Copied</string>
+    <string name="cd_flip_upper">Flip upper panel 180 degrees</string>
+    <string name="cd_restore_layout">Restore default layout</string>
+    <string name="cd_type_text">Type text to translate</string>
+    <string name="cd_send_text">Translate typed text</string>
+    <string name="cd_take_photo">Take a photo to translate</string>
+    <string name="cd_pick_photo">Choose a photo to translate</string>
+    <string name="cd_load_model">Load model</string>
+    <string name="cd_unload_model">Unload model</string>
+    <string name="hint_type_text">Type text to translate</string>
+
+    <!-- Status strip -->
+    <string name="status_mic_permission">Microphone permission is required to translate</string>
+    <string name="status_recording">Recording… tap stop when you finish speaking</string>
+    <string name="status_translating">Transcribing and translating… tap stop to cancel</string>
+    <string name="status_speaking">Speaking… tap stop to cancel</string>
+    <string name="status_loading_model">Loading %1$s…</string>
+    <string name="status_model_loaded">%1$s loaded · %2$s</string>
+    <string name="status_demo_engine">Demo engine loaded</string>
+    <string name="status_model_not_loaded">Model not loaded — tap the load icon</string>
+    <string name="status_unknown_backend">unknown backend</string>
+
+    <!-- Model download banner -->
+    <string name="banner_model_missing">Translation model not installed</string>
+    <string name="banner_downloading">Downloading %1$s · %2$s of %3$s</string>
+    <string name="action_download">Download</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_retry">Retry</string>
+
+    <!-- Transient messages -->
+    <string name="msg_cancelled">Cancelled</string>
+    <string name="msg_model_unloaded">Model unloaded</string>
+    <string name="msg_model_unloaded_memory">Model unloaded to free memory</string>
+    <string name="msg_engine_unavailable">Translation engine unavailable</string>
+    <string name="msg_no_translation">No translation produced</string>
+    <string name="msg_no_text_in_image">No text found in the image</string>
+    <string name="msg_cannot_read_image">Could not read that image</string>
+    <string name="msg_clipboard_unavailable">Clipboard unavailable</string>
+    <string name="msg_playback_failed">Playback failed</string>
+    <string name="msg_last_crash">Last crash: %1$s</string>
+
+    <!-- Speech recognition -->
+    <string name="err_speech_unavailable">Speech recognition unavailable on this device</string>
+    <string name="err_speech_start">Could not start listening</string>
+    <string name="err_no_match">Didn\'t catch that</string>
+    <string name="err_mic">Microphone error</string>
+    <string name="err_mic_permission">Microphone permission denied</string>
+    <string name="err_language_pack">Speech model for this language isn\'t installed</string>
+    <string name="err_recognizer_busy">Recogniser busy, try again</string>
+    <string name="err_recognition_service">Recognition service error</string>
+    <string name="err_speech_timeout">No speech heard</string>
+    <string name="err_recognition_cancelled">Recognition cancelled</string>
+    <string name="err_recognition_generic">Speech recognition failed (%1$d)</string>
+
+    <!-- Text to speech -->
+    <string name="err_tts_unavailable">Text-to-speech engine unavailable</string>
+    <string name="err_tts_voice_missing">Voice data for %1$s isn\'t installed</string>
+    <string name="err_tts_unsupported">%1$s isn\'t supported by the text-to-speech engine</string>
+    <string name="err_tts_start">Could not start playback</string>
+
+    <!-- Download failures -->
+    <string name="err_download_space">Not enough free storage for this model</string>
+    <string name="err_download_storage">Storage unavailable</string>
+    <string name="err_download_network">Network error while downloading</string>
+    <string name="err_download_resume">Download could not resume; start again</string>
+    <string name="err_download_file">Could not write the model file</string>
+    <string name="err_download_save">Could not save model</string>
+    <string name="err_download_generic">Download failed (%1$d)</string>
+    <string name="err_download_all_sources">All download sources failed. Check your connection and try again.</string>
+    <string name="cd_donate">Support this app</string>
+    <string name="donate_title">Support Aire Offline Translate</string>
+    <string name="donate_body">Aire Offline Translate is free and runs entirely on your device. If it is useful to you, a one-off contribution helps keep it maintained.</string>
+    <string name="donate_thanks">Thank you — that genuinely helps.</string>
+    <string name="donate_unavailable">Donation options are not available right now. They require the app to be installed from Google Play.</string>
+    <string name="action_close">Close</string>
+    <string name="cd_close_input">Close text input</string>
+    <string name="cd_cancel_run">Cancel</string>
+    <string name="action_models">Models</string>
+    <string name="action_delete">Delete</string>
+    <string name="banner_wifi_only">Wi-Fi only</string>
+    <string name="notif_downloading_model">Downloading translation model</string>
+    <string name="models_title">Translation models</string>
+    <string name="models_body">Both run entirely on your device. Downloads use Wi-Fi only.</string>
+    <string name="models_e4b_note">%1$s · best quality, needs 8 GB RAM or more</string>
+    <string name="models_e2b_note">%1$s · smaller and faster, for devices with less memory</string>
+    <string name="msg_model_deleted">%1$s deleted</string>
+    <string name="cd_models">Translation models</string>
+</resources>
