@@ -502,9 +502,16 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
      * Direction is fixed on purpose: photographing a sign or a menu means you cannot read it, so
      * the result belongs in the phone owner's language on their own panel.
      */
+    /**
+     * Translates the text in a photo, treating it as a turn taken by the near side.
+     *
+     * The extracted text lands on the near panel and its translation on the far one, spoken in the
+     * far language — identical to speaking into the near microphone. Putting the translation on
+     * the near panel instead, as this used to, meant a photo of text already in the near language
+     * produced no visible translation at all and read the source back aloud.
+     */
     fun onImagePicked(uri: Uri) {
         if (_state.value.isBusy) return
-        val target = _state.value.nearLanguage
 
         translationJob?.cancel()
         translationJob = viewModelScope.launch {
@@ -536,25 +543,55 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
                 return@launch
             }
 
-            val builder = StringBuilder()
-            try {
-                translator.translateImage(jpeg, target).collect { delta ->
-                    builder.append(delta)
-                    setText(Side.NEAR, builder.toString().trim())
-                }
+            // Pass 1 — read the image. Shown on the near panel as the source text.
+            val extracted = try {
+                translator.transcribeImage(jpeg).trim()
             } catch (cancellation: CancellationException) {
                 throw cancellation
             } catch (t: Throwable) {
-                Log.e(TAG, "Image translation failed", t)
+                Log.e(TAG, "Image transcription failed", t)
                 val reason = (translator.status.value as? EngineStatus.Unavailable)?.reason
                     ?: t.message ?: str(R.string.msg_cannot_read_image)
                 failWith(reason)
                 return@launch
             }
 
+            if (extracted.isEmpty()) {
+                failWith(str(R.string.msg_no_text_in_image))
+                return@launch
+            }
+
+            // Work out which way round to translate, so photographing a sign in either of the two
+            // languages does the useful thing rather than translating it into itself.
+            val sourceSide = detectSourceSide(extracted)
+            val targetSide = sourceSide.other()
+            val target = _state.value.languageFor(targetSide)
+
+            _state.update { it.copy(activeSide = sourceSide) }
+            setText(sourceSide, extracted)
+
+            // Pass 2 — translate it. Source stays null: the detection above chooses the direction,
+            // but the model still identifies the language itself when producing the translation.
+            val builder = StringBuilder()
+            try {
+                translator.translate(text = extracted, from = null, to = target)
+                    .collect { delta ->
+                        builder.append(delta)
+                        setText(targetSide, builder.toString().trim())
+                    }
+            } catch (cancellation: CancellationException) {
+                throw cancellation
+            } catch (t: Throwable) {
+                Log.e(TAG, "Image translation failed", t)
+                val reason = (translator.status.value as? EngineStatus.Unavailable)?.reason
+                    ?: t.message ?: str(R.string.msg_engine_unavailable)
+                failWith(reason)
+                return@launch
+            }
+
             val translated = builder.toString().trim()
             if (translated.isEmpty()) {
-                failWith(str(R.string.msg_no_text_in_image))
+                failWith(str(R.string.msg_no_translation))
                 return@launch
             }
 
@@ -592,15 +629,33 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
         val trimmed = text.trim()
         if (trimmed.isEmpty()) return
 
-        _state.update {
-            it.copy(
-                nearText = trimmed,
-                farText = "",
-                activeSide = Side.NEAR,
-                message = null,
-            )
+        translationJob?.cancel()
+        translationJob = viewModelScope.launch {
+            // Show the typed text on the near side immediately, then correct the side once the
+            // language is known. Waiting for detection first would leave the panel blank while the
+            // model thinks, and typed text is usually in the near language anyway.
+            _state.update {
+                it.copy(
+                    phase = Phase.TRANSLATING,
+                    nearText = trimmed,
+                    farText = "",
+                    activeSide = Side.NEAR,
+                    message = null,
+                )
+            }
+
+            if (translator.status.value !is EngineStatus.Ready) {
+                translator.prepare()
+            }
+
+            val sourceSide = detectSourceSide(trimmed)
+            if (sourceSide != Side.NEAR) {
+                _state.update {
+                    it.copy(nearText = "", farText = trimmed, activeSide = sourceSide)
+                }
+            }
+            runTranslation(from = sourceSide, text = trimmed)
         }
-        translate(from = Side.NEAR, text = trimmed)
     }
 
     fun onSplitChanged(fraction: Float) {
@@ -611,15 +666,25 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
         _state.update { it.copy(message = null) }
     }
 
+    /** Launches a translation run. Callers already inside a coroutine use [runTranslation]. */
     private fun translate(from: Side, text: String) {
+        translationJob = viewModelScope.launch { runTranslation(from, text) }
+    }
+
+    /**
+     * The translate → speak pipeline, minus the coroutine. Split out so callers that must do
+     * async work first — detecting the source language, for instance — can await that and then
+     * run this without nesting one translationJob inside another.
+     */
+    private suspend fun runTranslation(from: Side, text: String) {
         val target = from.other()
         val snapshot = _state.value
 
-        translationJob = viewModelScope.launch {
+        run {
             _state.update { it.copy(phase = Phase.TRANSLATING) }
 
             // Load on demand if the user never pressed the load button. Startup still never loads
-            // — the engine costs ~3.7 GB — but forgetting to load should cost a wait, not a
+            // — the engine costs several GB — but forgetting to load should cost a wait, not a
             // failed turn.
             if (translator.status.value !is EngineStatus.Ready) {
                 translator.prepare()
@@ -629,7 +694,7 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
                 val reason = (status as? EngineStatus.Unavailable)?.reason
                     ?: str(R.string.msg_engine_unavailable)
                 failWith(reason)
-                return@launch
+                return@run
             }
 
             val builder = StringBuilder()
@@ -652,13 +717,13 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
                     ?: t.message
                     ?: str(R.string.msg_engine_unavailable)
                 failWith(reason)
-                return@launch
+                return@run
             }
 
             val translated = builder.toString().trim()
             if (translated.isEmpty()) {
                 failWith(str(R.string.msg_no_translation))
-                return@launch
+                return@run
             }
 
             _state.update { it.copy(phase = Phase.SPEAKING) }
@@ -677,6 +742,24 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
                 it.copy(phase = Phase.IDLE, activeSide = null, message = playbackError ?: it.message)
             }
         }
+    }
+
+
+    /**
+     * Decides which panel a piece of text belongs to by asking the model what language it is in.
+     *
+     * Falls back to the near side when detection is unavailable or unsure — the same direction the
+     * app used before detection existed, so an inconclusive answer costs nothing.
+     */
+    private suspend fun detectSourceSide(text: String): Side {
+        val current = _state.value
+        if (current.nearLanguage == current.farLanguage) return Side.NEAR
+
+        val detected = runCatching {
+            translator.detectLanguage(text, listOf(current.nearLanguage, current.farLanguage))
+        }.getOrNull()
+
+        return if (detected == current.farLanguage) Side.FAR else Side.NEAR
     }
 
     private fun setText(side: Side, text: String) {

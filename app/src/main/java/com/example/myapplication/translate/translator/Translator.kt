@@ -41,15 +41,28 @@ interface Translator : AutoCloseable {
      * Translates [text], emitting the result incrementally so the UI can stream it.
      * Emissions are deltas, not cumulative snapshots — the caller concatenates them.
      */
-    fun translate(text: String, from: Language, to: Language): Flow<String>
+    /**
+     * Translates [text] into [to], streaming the result.
+     *
+     * A null [from] means "work it out" — used for photos, where the whole point of pointing a
+     * camera at a sign is that you cannot say what language it is in.
+     */
+    fun translate(text: String, from: Language?, to: Language): Flow<String>
 
     /**
-     * Reads the text in a photo and translates it into [to], streaming the result.
+     * Extracts the text from a photo, without translating it.
      *
-     * The source language is deliberately not a parameter — the whole point of pointing a camera
-     * at a sign or a menu is that you do not know what it says.
+     * Returned rather than streamed because the caller needs the whole transcription to show as
+     * the source before translating it — and because splitting extraction from translation is
+     * what makes the model do both reliably.
      */
-    fun translateImage(jpeg: ByteArray, to: Language): Flow<String>
+    suspend fun transcribeImage(jpeg: ByteArray): String
+
+    /**
+     * Identifies which of [candidates] a piece of text is written in, or null when the model is
+     * unsure. Used to decide which way round to translate.
+     */
+    suspend fun detectLanguage(text: String, candidates: List<Language>): Language?
 
     /**
      * Asks the engine to abandon the generation in flight.
@@ -84,6 +97,29 @@ internal fun translationPrompt(text: String, from: Language, to: Language): Stri
  * apart from a failed one.
  */
 internal const val NO_TEXT_MARKER = "NO_TEXT_FOUND"
+
+/** Answer the model gives when a text matches none of the offered languages. */
+internal const val UNKNOWN_LANGUAGE_MARKER = "UNKNOWN"
+
+/**
+ * Only the opening of a text is sampled for detection. A menu can run to thousands of characters
+ * and the first line settles the question just as well, at a fraction of the prefill cost.
+ */
+private const val DETECTION_SAMPLE_CHARS = 400
+
+/**
+ * Forces a single-word answer from a closed set. Asking an open "what language is this?" invites
+ * a sentence of explanation that then has to be parsed.
+ */
+internal fun languageDetectionPrompt(text: String, candidates: List<Language>): String =
+    buildString {
+        append("Which language is the text below written in?\n")
+        append("Answer with exactly one of these words and nothing else:\n")
+        candidates.forEach { append("${it.promptName}\n") }
+        append("$UNKNOWN_LANGUAGE_MARKER\n\n")
+        append("Text:\n")
+        append(text.take(DETECTION_SAMPLE_CHARS))
+    }
 
 /**
  * Step one of photo translation: transcribe only.

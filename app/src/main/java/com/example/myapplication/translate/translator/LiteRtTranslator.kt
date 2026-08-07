@@ -181,7 +181,7 @@ class LiteRtTranslator(context: Context, private val variant: ModelVariant) : Tr
             Build.HARDWARE.startsWith("gs", ignoreCase = true) ||
             Build.HARDWARE.startsWith("zuma", ignoreCase = true)
 
-    override fun translate(text: String, from: Language, to: Language): Flow<String> = flow {
+    override fun translate(text: String, from: Language?, to: Language): Flow<String> = flow {
         val active = engine ?: throw IllegalStateException("Engine not initialised; call prepare() first")
 
         // Retire previous conversations now, while the engine is provably idle.
@@ -199,7 +199,14 @@ class LiteRtTranslator(context: Context, private val variant: ModelVariant) : Tr
             // The stream contract is not pinned down by the API docs, so this tolerates both
             // shapes: chunks that are deltas, and chunks that are cumulative snapshots.
             val seen = StringBuilder()
-            conversation.sendMessageAsync(translationPrompt(text, from, to)).collect { message ->
+                    // A null source means the text came from a photo, where the language is unknown.
+        val prompt = if (from == null) {
+            autoSourceTranslationPrompt(text, to)
+        } else {
+            translationPrompt(text, from, to)
+        }
+
+        conversation.sendMessageAsync(prompt).collect { message ->
                 val chunk = message.contents.contents
                     .filterIsInstance<Content.Text>()
                     .joinToString(separator = "") { it.text }
@@ -229,66 +236,41 @@ class LiteRtTranslator(context: Context, private val variant: ModelVariant) : Tr
     }.flowOn(Dispatchers.IO)
 
     /**
-     * Photo translation in two passes: transcribe, then translate.
+     * Vision pass: transcription only, never translation.
      *
      * A single "read this and translate it" instruction does not work — the model performs the
-     * reading and skips the translating, returning the source language verbatim. Splitting it
-     * costs a second inference but each pass then asks for one unambiguous thing, and the second
-     * pass is the same text path that already translates reliably.
+     * reading and skips the translating, returning the source verbatim. The caller runs the
+     * result back through [translate], so each pass asks for one unambiguous thing.
      */
-    override fun translateImage(jpeg: ByteArray, to: Language): Flow<String> = flow {
-        val active = engine ?: throw IllegalStateException("Engine not initialised; call prepare() first")
+    override suspend fun transcribeImage(jpeg: ByteArray): String = withContext(Dispatchers.IO) {
+        val active = engine
+            ?: throw IllegalStateException("Engine not initialised; call prepare() first")
 
         retirePendingConversations()
 
         try {
-            // Pass 1 — vision. Synchronous: the whole transcription is needed before translating,
-            // so there is nothing useful to stream here.
-            val transcription = newConversation(active, MAX_IMAGE_OUTPUT_TOKENS).let { conversation ->
-                pending += conversation
-                conversation.sendMessage(
-                    Contents.of(
-                        Content.ImageBytes(jpeg),
-                        Content.Text(imageTranscriptionPrompt()),
-                    )
-                ).textContent().trim()
-            }
-
-            Log.i(TAG, "Transcribed ${transcription.length} chars from image")
-
-            if (transcription.isBlank() || transcription.contains(NO_TEXT_MARKER)) {
-                return@flow
-            }
-
-            // Pass 2 — text. A fresh conversation so the image and the transcription prompt are
-            // not in context; a chat model that can still see them tends to describe rather than
-            // translate.
             val conversation = newConversation(active, MAX_IMAGE_OUTPUT_TOKENS)
             pending += conversation
 
-            val seen = StringBuilder()
-            conversation.sendMessageAsync(autoSourceTranslationPrompt(transcription, to))
-                .collect { message ->
-                    val chunk = message.textContent()
-                    if (chunk.isEmpty()) return@collect
+            val text = conversation.sendMessage(
+                Contents.of(
+                    Content.ImageBytes(jpeg),
+                    Content.Text(imageTranscriptionPrompt()),
+                )
+            ).textContent().trim()
 
-                    val delta = if (chunk.length > seen.length && chunk.startsWith(seen)) {
-                        chunk.substring(seen.length).also { seen.setLength(0); seen.append(chunk) }
-                    } else {
-                        chunk.also { seen.append(it) }
-                    }
-                    if (delta.isNotEmpty()) emit(delta)
-                }
+            Log.i(TAG, "Transcribed ${text.length} chars from image")
+            if (text.contains(NO_TEXT_MARKER)) "" else text
         } catch (cancellation: CancellationException) {
             throw cancellation
         } catch (t: Throwable) {
-            Log.e(TAG, "Image inference failed on $activeBackend", t)
+            Log.e(TAG, "Image transcription failed on $activeBackend", t)
             _status.value = EngineStatus.Unavailable(
                 "$activeBackend failed reading the image: ${t.message?.take(70)}"
             )
             throw t
         }
-    }.flowOn(Dispatchers.IO)
+    }
 
     private fun newConversation(engine: Engine, maxTokens: Int) = engine.createConversation(
         ConversationConfig(
@@ -303,6 +285,40 @@ class LiteRtTranslator(context: Context, private val variant: ModelVariant) : Tr
 
     private fun com.google.ai.edge.litertlm.Message.textContent(): String =
         contents.contents.filterIsInstance<Content.Text>().joinToString(separator = "") { it.text }
+
+    override suspend fun detectLanguage(
+        text: String,
+        candidates: List<Language>,
+    ): Language? = withContext(Dispatchers.IO) {
+        if (text.isBlank() || candidates.isEmpty()) return@withContext null
+        val active = engine ?: return@withContext null
+
+        try {
+            // Its own short-lived conversation: a few tokens out, and no shared context that
+            // could bias the answer toward whatever was translated last.
+            val conversation = newConversation(active, MAX_DETECTION_TOKENS)
+            pending += conversation
+
+            val answer = conversation
+                .sendMessage(languageDetectionPrompt(text, candidates))
+                .textContent()
+                .trim()
+
+            // Matched loosely: the model sometimes answers "Japanese." or "It is Japanese".
+            val detected = candidates.firstOrNull {
+                answer.contains(it.promptName, ignoreCase = true)
+            }
+            Log.i(TAG, "Language detection answered '$answer' → ${detected?.tag ?: "unknown"}")
+            detected
+        } catch (cancellation: CancellationException) {
+            throw cancellation
+        } catch (t: Throwable) {
+            // Detection is an optimisation, never a hard requirement — the caller falls back to a
+            // sensible default direction rather than failing the translation.
+            Log.w(TAG, "Language detection failed", t)
+            null
+        }
+    }
 
     override fun cancelGeneration() {
         synchronized(pending) {
@@ -332,6 +348,9 @@ class LiteRtTranslator(context: Context, private val variant: ModelVariant) : Tr
 
         /** Signs and menus carry far more text than one spoken utterance. */
         private const val MAX_IMAGE_OUTPUT_TOKENS = 512
+
+        /** A language name is a word or two; anything more is the model padding. */
+        private const val MAX_DETECTION_TOKENS = 12
 
         /** Greedy decoding. Translation wants reproducibility, not creativity. */
         private const val GREEDY_TOP_K = 1

@@ -27,7 +27,7 @@ class StubTranslator : Translator {
         _status.value = EngineStatus.Ready("STUB")
     }
 
-    override fun translate(text: String, from: Language, to: Language): Flow<String> = flow {
+    override fun translate(text: String, from: Language?, to: Language): Flow<String> = flow {
         delay(TIME_TO_FIRST_TOKEN_MS)
         val words = "[${to.promptName}] $text".split(" ")
         words.forEachIndexed { index, word ->
@@ -36,15 +36,17 @@ class StubTranslator : Translator {
         }
     }
 
-    override fun translateImage(jpeg: ByteArray, to: Language): Flow<String> = flow {
+    override suspend fun transcribeImage(jpeg: ByteArray): String {
         // Vision encoding is a real, one-off cost before any token appears; mimic it so the UI is
         // exercised against realistic timing rather than an instant response.
         delay(VISION_ENCODE_MS)
-        val words = "[${to.promptName} from photo, ${jpeg.size / 1024} KB]".split(" ")
-        words.forEachIndexed { index, word ->
-            emit(if (index == 0) word else " $word")
-            delay(MS_PER_TOKEN)
-        }
+        return "[text from photo, ${jpeg.size / 1024} KB]"
+    }
+
+    /** Always reports the first candidate, so the stub exercises the near-source direction. */
+    override suspend fun detectLanguage(text: String, candidates: List<Language>): Language? {
+        delay(200)
+        return candidates.firstOrNull()
     }
 
     /** Nothing native to stop; cancelling the collector is enough for the fake stream. */

@@ -14,8 +14,8 @@ android {
         applicationId = "com.aire.translate"
         minSdk = 33
         targetSdk = 37
-        versionCode = 29
-        versionName = "3.8-e2b-default"
+        versionCode = 31
+        versionName = "4.0-auto-detect"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
