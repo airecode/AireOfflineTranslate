@@ -3,8 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- Live OCR reads frames in-process; no image ever leaves the device. -->
+    <uses-permission android:name="android.permission.CAMERA" />
     <!-- Used to download the Gemma 4 model on first run; inference itself is offline. -->
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Not required: speech and gallery input work perfectly well without a camera, so a
+         camera-less device should still be able to install. -->
+    <uses-feature
+        android:name="android.hardware.camera.any"
+        android:required="false" />
 
     <!-- Package visibility: required on API 30+ to bind to the speech recogniser and TTS engine. -->
     <queries>

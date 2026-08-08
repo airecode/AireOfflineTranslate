@@ -17,7 +17,6 @@
 
     <string name="status_mic_permission">الترجمة تتطلب إذن الميكروفون</string>
     <string name="status_recording">جارٍ التسجيل… اضغط إيقاف عند انتهائك من الكلام</string>
-    <string name="status_translating">جارٍ التفريغ والترجمة… اضغط إيقاف للإلغاء</string>
     <string name="status_speaking">جارٍ القراءة… اضغط إيقاف للإلغاء</string>
     <string name="status_loading_model">جارٍ تحميل %1$s…</string>
     <string name="status_model_loaded">تم تحميل %1$s · %2$s</string>
@@ -88,4 +87,12 @@
     <string name="msg_load_cancelled">تم إلغاء تحميل النموذج</string>
     <string name="loading_dialog_body">يستغرق ذلك بضع ثوانٍ، ويجب أن يكتمل قبل الترجمة.</string>
     <string name="loading_dialog_cancelling">جارٍ الإلغاء…</string>
+    <string name="progress_dialog_title">جارٍ النسخ والترجمة…</string>
+    <string name="progress_dialog_body">تجري العملية بالكامل على جهازك، لذا تستغرق بضع ثوانٍ.</string>
+    <string name="cd_camera">المسح بالكاميرا</string>
+    <string name="camera_hint_aim">وجّه الكاميرا نحو النص، وسيتم التصوير تلقائيًا.</string>
+    <string name="camera_hint_hold">حافظ على ثبات الكاميرا…</string>
+    <string name="camera_hint_capturing">جارٍ التصوير…</string>
+    <string name="msg_camera_unavailable">الكاميرا غير متوفرة</string>
+    <string name="msg_camera_permission">إذن الكاميرا مطلوب لمسح النص</string>
 </resources>

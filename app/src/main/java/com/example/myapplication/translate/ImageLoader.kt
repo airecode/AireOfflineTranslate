@@ -73,6 +73,49 @@ object ImageLoader {
         }
     }
 
+    /**
+     * Normalises a still straight off the camera: downscaled, and rotated upright in pixels.
+     *
+     * The rotation cannot be left to EXIF here for the same reason it cannot for a gallery photo —
+     * CameraX records orientation in metadata rather than turning the pixels, and the vision
+     * encoder only ever sees pixels. Text captured sideways is text the model does not read.
+     */
+    fun decodeCapturedJpeg(jpeg: ByteArray, rotationDegrees: Int): ByteArray? {
+        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        BitmapFactory.decodeByteArray(jpeg, 0, jpeg.size, bounds)
+        if (bounds.outWidth <= 0 || bounds.outHeight <= 0) {
+            Log.e(TAG, "Captured frame has no usable dimensions")
+            return null
+        }
+
+        var sample = 1
+        while (max(bounds.outWidth, bounds.outHeight) / sample > MAX_DIMENSION) sample *= 2
+
+        val decoded = try {
+            BitmapFactory.decodeByteArray(
+                jpeg, 0, jpeg.size,
+                BitmapFactory.Options().apply { inSampleSize = sample },
+            )
+        } catch (t: Throwable) {
+            Log.e(TAG, "Could not decode captured frame", t)
+            null
+        } ?: return null
+
+        val upright = rotate(decoded, rotationDegrees.toFloat())
+        return try {
+            ByteArrayOutputStream().use { out ->
+                upright.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, out)
+                out.toByteArray()
+            }
+        } catch (t: Throwable) {
+            Log.e(TAG, "Could not encode captured frame", t)
+            null
+        } finally {
+            if (upright !== decoded) decoded.recycle()
+            upright.recycle()
+        }
+    }
+
     private fun applyExifRotation(context: Context, uri: Uri, bitmap: Bitmap): Bitmap {
         val degrees = try {
             context.contentResolver.openInputStream(uri)?.use { stream ->
@@ -93,6 +136,11 @@ object ImageLoader {
             0f
         }
 
+        return rotate(bitmap, degrees)
+    }
+
+    /** Returns [bitmap] itself when there is nothing to do, so callers can compare by identity. */
+    private fun rotate(bitmap: Bitmap, degrees: Float): Bitmap {
         if (degrees == 0f) return bitmap
         return try {
             Bitmap.createBitmap(

@@ -93,6 +93,7 @@ fun TranslateScreen(
     onRestoreLayout: () -> Unit,
     onTranslateTypedText: (String) -> Unit,
     onPickPhoto: () -> Unit,
+    onScanCamera: () -> Unit,
     onManageModels: () -> Unit,
     onLoadModel: () -> Unit,
     onUnloadModel: () -> Unit,
@@ -141,6 +142,7 @@ fun TranslateScreen(
                 onCopyText = { onCopyText(Side.FAR) },
                 onTranslateTypedText = onTranslateTypedText,
                 onPickPhoto = onPickPhoto,
+                onScanCamera = onScanCamera,
                 onSwapLanguages = onSwapLanguages,
                 onLanguageSelected = onLanguageSelected,
             )
@@ -162,6 +164,7 @@ fun TranslateScreen(
                 onCopyText = { onCopyText(Side.NEAR) },
                 onTranslateTypedText = onTranslateTypedText,
                 onPickPhoto = onPickPhoto,
+                onScanCamera = onScanCamera,
                 onSwapLanguages = onSwapLanguages,
                 onLanguageSelected = onLanguageSelected,
             )
@@ -265,8 +268,9 @@ private fun StatusStrip(state: TranslateUiState, micPermissionGranted: Boolean) 
         !micPermissionGranted -> stringResource(R.string.status_mic_permission)
         state.message != null -> state.message
         // Phase first: during a run the user cares what the app is doing, not what is loaded.
+        // TRANSLATING is absent deliberately — RunProgressDialog owns that phase now, and saying
+        // the same thing in the strip underneath it was just noise.
         state.phase == Phase.LISTENING -> stringResource(R.string.status_recording)
-        state.phase == Phase.TRANSLATING -> stringResource(R.string.status_translating)
         state.phase == Phase.SPEAKING -> stringResource(R.string.status_speaking)
         // Names the variant being loaded. A hardcoded model name here made switching to E2B
         // look like it had not taken effect.
@@ -401,6 +405,7 @@ private fun TranslatorPanel(
     onCopyText: () -> Unit,
     onTranslateTypedText: (String) -> Unit,
     onPickPhoto: () -> Unit,
+    onScanCamera: () -> Unit,
     onSwapLanguages: () -> Unit,
     onLanguageSelected: (Side, Language) -> Unit,
 ) {
@@ -493,6 +498,7 @@ private fun TranslatorPanel(
                     enabled = !state.isBusy,
                     onSubmit = onTranslateTypedText,
                     onPickPhoto = onPickPhoto,
+                    onScanCamera = onScanCamera,
                 )
             }
 
@@ -521,6 +527,7 @@ private fun TypedInputRow(
     enabled: Boolean,
     onSubmit: (String) -> Unit,
     onPickPhoto: () -> Unit,
+    onScanCamera: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
     var draft by remember { mutableStateOf("") }
@@ -548,6 +555,13 @@ private fun TypedInputRow(
                 Icon(
                     painter = painterResource(R.drawable.ic_keyboard),
                     contentDescription = stringResource(R.string.cd_type_text),
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+            }
+            IconButton(onClick = onScanCamera, enabled = enabled) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_camera),
+                    contentDescription = stringResource(R.string.cd_camera),
                     tint = MaterialTheme.colorScheme.primary,
                 )
             }

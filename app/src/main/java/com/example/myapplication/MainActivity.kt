@@ -26,9 +26,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.translate.CrashReporter
 import com.example.myapplication.translate.billing.DonationBilling
 import com.example.myapplication.translate.translator.EngineStatus
+import com.example.myapplication.translate.ui.CameraOcrDialog
 import com.example.myapplication.translate.ui.DonationDialog
 import com.example.myapplication.translate.ui.LoadingDialog
 import com.example.myapplication.translate.ui.ModelsDialog
+import com.example.myapplication.translate.ui.Phase
+import com.example.myapplication.translate.ui.RunProgressDialog
 import com.example.myapplication.translate.ui.ConversationViewModel
 import com.example.myapplication.translate.ui.TranslateScreen
 import com.example.myapplication.translate.ui.TranslateTheme
@@ -68,6 +71,44 @@ class MainActivity : ComponentActivity() {
                     ActivityResultContracts.PickVisualMedia()
                 ) { uri -> uri?.let(viewModel::onImagePicked) }
 
+                var showCamera by remember { mutableStateOf(false) }
+
+                // Asked for on first use, not at startup: someone who only ever speaks or picks
+                // photos should never see a camera prompt.
+                val cameraPermissionLauncher = rememberLauncherForActivityResult(
+                    ActivityResultContracts.RequestPermission()
+                ) { granted ->
+                    if (granted) {
+                        showCamera = true
+                    } else {
+                        viewModel.onCameraDenied()
+                    }
+                }
+
+                fun scanWithCamera() {
+                    val granted = ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.CAMERA,
+                    ) == PackageManager.PERMISSION_GRANTED
+                    if (granted) {
+                        showCamera = true
+                    } else {
+                        cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                    }
+                }
+
+                if (showCamera) {
+                    CameraOcrDialog(
+                        onCapture = { jpeg, rotation ->
+                            // Closed before the run starts, so the progress dialog is what the user
+                            // sees next rather than a frozen preview.
+                            showCamera = false
+                            viewModel.onCameraCapture(jpeg, rotation)
+                        },
+                        onDismiss = { showCamera = false },
+                    )
+                }
+
                 LaunchedEffect(micGranted) {
                     if (!micGranted) permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
                 }
@@ -99,14 +140,23 @@ class MainActivity : ComponentActivity() {
                     onDispose { billing.release() }
                 }
 
-                // Driven by engine status rather than a local flag, so it covers the auto-load
-                // paths — a mic tap or a photo with no model resident — and not just the load
-                // button.
-                if (state.engineStatus is EngineStatus.Loading) {
-                    LoadingDialog(
+                // One modal at a time. A run that triggers an auto-load is in both states at once —
+                // TRANSLATING and Loading — and stacking two dialogs would show the user two
+                // cancel buttons over each other. Loading wins because it is the more specific
+                // thing to say, and cancelling it abandons the run as well.
+                when {
+                    // Driven by engine status rather than a local flag, so this covers the
+                    // auto-load paths and not just the load button.
+                    state.engineStatus is EngineStatus.Loading -> LoadingDialog(
                         modelName = state.activeVariant.displayName,
                         cancelling = state.cancellingLoad,
                         onCancel = viewModel::onCancelLoad,
+                    )
+
+                    // SPEAKING is deliberately not covered: the translation is on screen by then
+                    // and the user should be able to read along while it is spoken.
+                    state.phase == Phase.TRANSLATING -> RunProgressDialog(
+                        onCancel = viewModel::onCancelRun,
                     )
                 }
 
@@ -150,6 +200,9 @@ class MainActivity : ComponentActivity() {
                             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                         )
                     },
+                    // No onExternalActivityLaunched: the camera is a dialog inside this app, not a
+                    // hand-off, so the idle-unload countdown must not start.
+                    onScanCamera = { scanWithCamera() },
                     onManageModels = { showModels = true },
                     onLoadModel = viewModel::onLoadModel,
                     onUnloadModel = viewModel::onUnloadModel,

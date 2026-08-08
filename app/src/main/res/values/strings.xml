@@ -22,7 +22,6 @@
     <!-- Status strip -->
     <string name="status_mic_permission">Microphone permission is required to translate</string>
     <string name="status_recording">Recording… tap stop when you finish speaking</string>
-    <string name="status_translating">Transcribing and translating… tap stop to cancel</string>
     <string name="status_speaking">Speaking… tap stop to cancel</string>
     <string name="status_loading_model">Loading %1$s…</string>
     <string name="status_model_loaded">%1$s loaded · %2$s</string>
@@ -98,4 +97,12 @@
     <string name="msg_load_cancelled">Model loading cancelled</string>
     <string name="loading_dialog_body">This takes a few seconds and must finish before translating.</string>
     <string name="loading_dialog_cancelling">Cancelling…</string>
+    <string name="progress_dialog_title">Transcribing and translating…</string>
+    <string name="progress_dialog_body">This runs entirely on your device, so it takes a few seconds.</string>
+    <string name="cd_camera">Scan text with the camera</string>
+    <string name="camera_hint_aim">Point at the text. It captures by itself.</string>
+    <string name="camera_hint_hold">Hold steady…</string>
+    <string name="camera_hint_capturing">Capturing…</string>
+    <string name="msg_camera_unavailable">Camera unavailable</string>
+    <string name="msg_camera_permission">Camera permission is required to scan text</string>
 </resources>

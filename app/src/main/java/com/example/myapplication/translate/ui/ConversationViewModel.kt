@@ -404,6 +404,12 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
+    /**
+     * Abandons the run in flight. Reachable from the progress dialog, which covers the mic button
+     * that would otherwise be the way to do this.
+     */
+    fun onCancelRun() = abortRun()
+
     /** Tears down whatever is in flight and returns to idle, ready to record again. */
     private fun abortRun() {
         translationJob?.cancel()
@@ -552,21 +558,41 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
         persistLanguages()
     }
 
+    /** Camera permission refused. Says so once rather than leaving a dead button. */
+    fun onCameraDenied() {
+        _state.update { it.copy(message = str(R.string.msg_camera_permission)) }
+    }
+
+    /** A photo chosen from the gallery. Decoding and EXIF rotation happen off the main thread. */
+    fun onImagePicked(uri: Uri) = startImageRun {
+        withContext(Dispatchers.IO) { ImageLoader.readAsJpeg(getApplication(), uri) }
+    }
+
     /**
-     * Reads a photo and translates whatever text it contains into the near language.
+     * A frame the camera captured by itself, handed over raw.
      *
-     * Direction is fixed on purpose: photographing a sign or a menu means you cannot read it, so
-     * the result belongs in the phone owner's language on their own panel.
+     * The decode happens here rather than in the camera screen because that runs on a capture
+     * callback thread, and this already has a coroutine for it. Beyond that the frame goes through
+     * the same pipeline as a picked photo — the direction detection and two-pass prompting are
+     * exactly as necessary here, and a second code path would be a second place for them to drift.
      */
+    fun onCameraCapture(jpeg: ByteArray, rotationDegrees: Int) = startImageRun {
+        withContext(Dispatchers.IO) { ImageLoader.decodeCapturedJpeg(jpeg, rotationDegrees) }
+    }
+
     /**
-     * Translates the text in a photo, treating it as a turn taken by the near side.
+     * Reads the text in an image and translates it, treating it as a turn taken by whichever side
+     * the text's language belongs to.
      *
-     * The extracted text lands on the near panel and its translation on the far one, spoken in the
-     * far language — identical to speaking into the near microphone. Putting the translation on
-     * the near panel instead, as this used to, meant a photo of text already in the near language
-     * produced no visible translation at all and read the source back aloud.
+     * The extracted text lands on that side's panel and its translation on the other, spoken in the
+     * other language — identical to speaking into that side's microphone. Putting the translation on
+     * the near panel unconditionally, as this used to, meant a photo of text already in the near
+     * language produced no visible translation at all and read the source back aloud.
+     *
+     * [load] runs inside the job so a slow decode is cancellable and fails the same way as
+     * everything else in the run.
      */
-    fun onImagePicked(uri: Uri) {
+    private fun startImageRun(load: suspend () -> ByteArray?) {
         if (_state.value.isBusy) return
 
         translationJob?.cancel()
@@ -581,9 +607,7 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
                 )
             }
 
-            val jpeg = withContext(Dispatchers.IO) {
-                ImageLoader.readAsJpeg(getApplication(), uri)
-            }
+            val jpeg = load()
             if (jpeg == null) {
                 failWith(str(R.string.msg_cannot_read_image))
                 return@launch

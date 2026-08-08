@@ -16,13 +16,18 @@ table. Each half shows its own language and has its own microphone, replay and c
 - **Speak** — tap the microphone, speak, tap stop. The transcript appears on the speaker's half,
   the translation on the listener's, and is read aloud in the listener's language.
 - **Type** — a keyboard button on the lower half for text input.
-- **Photo** — pick an image and Gemma reads the text in it and translates it. Uses the model's own
-  vision encoder, so every script the model knows is covered.
+- **Camera** — point it at a sign or a menu. There is no shutter button: the app watches for you
+  to stop moving and takes the frame itself. It reads one frame per opening rather than
+  continuously, because a vision encode plus a translation takes seconds — so it picks the moment
+  you have aimed instead of pretending to read video.
+- **Photo** — pick an image from the gallery instead. Both routes use the model's own vision
+  encoder, so every script the model knows is covered.
 - **Replay / copy** — per half, so either person can hear a line again or copy it. Copy is a
   button rather than text selection because the platform's selection UI does not respect the
   rotated half.
-- **Cancel** — the microphone becomes a red stop square while recording, and a red cross while
-  translating or speaking, which abandons the run.
+- **Cancel** — the microphone becomes a red stop square while recording. Transcribing and
+  translating puts up a blocking dialog with a progress bar and its own cancel, because nothing
+  else on screen is usable until the turn finishes.
 
 18 languages: English, Arabic, Chinese (Simplified and Traditional), Filipino, French, German,
 Hebrew, Hindi, Japanese, Korean, Malay, Russian, Spanish, Tamil, Thai, Turkish, Vietnamese.
@@ -197,7 +202,8 @@ app/src/main/java/com/example/myapplication/
 ├── MainActivity.kt                  Activity, permissions, photo picker, dialogs
 └── translate/
     ├── Language.kt                  The 18 languages, endonyms, prompts
-    ├── ImageLoader.kt               Downscale + EXIF rotation for photo input
+    ├── ImageLoader.kt               Downscale + rotation for photo and camera input
+    ├── SceneStabilityDetector.kt    Decides when the camera has been held still
     ├── CrashReporter.kt             Persists uncaught exceptions for the next launch
     ├── billing/DonationBilling.kt   Play Billing
     ├── speech/                      SpeechToText, Speaker (TTS)

@@ -14,8 +14,8 @@ android {
         applicationId = "com.aire.translate"
         minSdk = 33
         targetSdk = 37
-        versionCode = 33
-        versionName = "4.2-e2b-only"
+        versionCode = 34
+        versionName = "4.3-camera-ocr"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -61,7 +61,12 @@ dependencies {
     // ProcessLifecycleOwner: whole-app foreground/background, not per-activity.
     implementation(libs.androidx.lifecycle.process)
 
-    // On-device Gemma 4 E4B inference.
+    // Live camera OCR: preview, frame analysis for the stability check, and stills.
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
+
+    // On-device Gemma inference.
     implementation(libs.litertlm.android)
     // Google Play Billing for one-off donations.
     implementation(libs.billing.ktx)

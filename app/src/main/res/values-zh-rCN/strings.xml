@@ -17,7 +17,6 @@
 
     <string name="status_mic_permission">翻译需要麦克风权限</string>
     <string name="status_recording">录音中…说完后请点击停止</string>
-    <string name="status_translating">正在转写和翻译…点击停止可取消</string>
     <string name="status_speaking">朗读中…点击停止可取消</string>
     <string name="status_loading_model">正在加载 %1$s…</string>
     <string name="status_model_loaded">%1$s 已加载 · %2$s</string>
@@ -88,4 +87,12 @@
     <string name="msg_load_cancelled">已取消模型加载</string>
     <string name="loading_dialog_body">需要几秒钟，完成后才能翻译。</string>
     <string name="loading_dialog_cancelling">正在取消…</string>
+    <string name="progress_dialog_title">正在转写和翻译…</string>
+    <string name="progress_dialog_body">全部在您的设备上处理，因此需要几秒钟。</string>
+    <string name="cd_camera">用相机扫描</string>
+    <string name="camera_hint_aim">将相机对准文字，会自动拍摄。</string>
+    <string name="camera_hint_hold">请保持稳定…</string>
+    <string name="camera_hint_capturing">正在拍摄…</string>
+    <string name="msg_camera_unavailable">相机不可用</string>
+    <string name="msg_camera_permission">扫描文字需要相机权限</string>
 </resources>
