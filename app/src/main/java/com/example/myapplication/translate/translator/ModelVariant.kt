@@ -3,13 +3,16 @@ package com.example.myapplication.translate.translator
 /**
  * The Gemma builds the app can run.
  *
- * E4B is the better translator; E2B is the one that fits on a phone that cannot spare 3.7 GB of
- * RAM. Offering both is the difference between supporting flagships only and supporting the
- * mid-range, so the choice is the user's rather than ours.
+ * Only E2B is supported. It is the build that fits on a phone that cannot spare 3.7 GB of RAM,
+ * which is most of them; supporting the larger E4B as well meant a second multi-gigabyte download
+ * that the majority of devices could not load anyway.
  *
- * Every URL below was verified to return 200 for its file. As with a single model, the four
- * sources are not independent origins — they all terminate at the same Hugging Face CDN — so they
- * cover a blocked domain, a failed DNS lookup or a moved branch, not an outage at the source.
+ * This stays an enum rather than collapsing into constants because [ModelLocation] and
+ * [ModelDownloader] are keyed on it, and because a second build may well be worth offering again.
+ *
+ * Every URL below was verified to return 200 for its file. The four sources are not independent
+ * origins — they all terminate at the same Hugging Face CDN — so they cover a blocked domain, a
+ * failed DNS lookup or a moved branch, not an outage at the source.
  */
 enum class ModelVariant(
     val id: String,
@@ -19,9 +22,6 @@ enum class ModelVariant(
     private val repo: String,
     private val pinnedRevision: String,
 ) {
-    // Declaration order is the order shown in the model manager. E2B comes first because it is
-    // the sensible default: a gigabyte smaller to download, and it runs on phones that cannot
-    // spare the memory E4B needs.
     E2B(
         id = "e2b",
         displayName = "Gemma 4 E2B",
@@ -29,17 +29,9 @@ enum class ModelVariant(
         sizeBytes = 2_588_147_712L,
         repo = "litert-community/gemma-4-E2B-it-litert-lm",
         pinnedRevision = "9262660a1676eed6d0c477ab1a86344430854664",
-    ),
-    E4B(
-        id = "e4b",
-        displayName = "Gemma 4 E4B",
-        fileName = "gemma-4-E4B-it.litertlm",
-        sizeBytes = 3_659_530_240L,
-        repo = "litert-community/gemma-4-E4B-it-litert-lm",
-        pinnedRevision = "f7ad3343bd6ebc9607f4dc3bc4f2398bd5749bc5",
     );
 
-    /** Approximate size for display, e.g. "3.66 GB". */
+    /** Approximate size for display, e.g. "2.59 GB". */
     val sizeGb: String get() = String.format(java.util.Locale.US, "%.2f GB", sizeBytes / 1_000_000_000.0)
 
     val downloadUrls: List<String>
@@ -51,12 +43,12 @@ enum class ModelVariant(
         )
 
     companion object {
-        /**
-         * Only applies to a fresh install. Anyone who has already chosen a variant keeps it —
-         * [fromId] resolves their stored preference before this is consulted.
-         */
         val DEFAULT = E2B
 
+        /**
+         * Falls back to [DEFAULT] for anything unrecognised, which is what carries a preference
+         * left behind by a build that offered E4B.
+         */
         fun fromId(id: String?): ModelVariant = entries.firstOrNull { it.id == id } ?: DEFAULT
     }
 }

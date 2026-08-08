@@ -1,6 +1,7 @@
 package com.example.myapplication.translate.translator
 
 import com.example.myapplication.translate.Language
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +14,7 @@ import kotlinx.coroutines.flow.flow
  *
  * It deliberately mimics the real engine's *timing* — a load delay, a time-to-first-token pause,
  * then token-rate streaming — so that latency problems in the UI show up here rather than only
- * appearing once the real 3.66 GB model is in place.
+ * appearing once the real 2.59 GB model is in place.
  */
 class StubTranslator : Translator {
 
@@ -23,9 +24,19 @@ class StubTranslator : Translator {
     override suspend fun prepare() {
         if (_status.value is EngineStatus.Ready) return
         _status.value = EngineStatus.Loading
-        delay(600)
+        try {
+            delay(LOAD_MS)
+        } catch (e: CancellationException) {
+            // Unlike the real engine this load *is* interruptible, so the status has to be put
+            // back by hand — nothing else runs after the throw.
+            _status.value = EngineStatus.Idle
+            throw e
+        }
         _status.value = EngineStatus.Ready("STUB")
     }
+
+    /** The stub's load is a cancellable `delay`, so the coroutine cancellation does the work. */
+    override fun cancelLoad() = Unit
 
     override fun translate(text: String, from: Language?, to: Language): Flow<String> = flow {
         delay(TIME_TO_FIRST_TOKEN_MS)
@@ -57,7 +68,14 @@ class StubTranslator : Translator {
     }
 
     private companion object {
-        /** Matches the published GPU-backend TTFT for Gemma 4 E4B. */
+        /**
+         * Loading the real weights takes several seconds, not the fraction of one this used to
+         * wait. The old value was short enough that the loading dialog barely appeared, which is
+         * the opposite of what a stub built to mimic real timings is for.
+         */
+        const val LOAD_MS = 3_000L
+
+        /** Matches the published GPU-backend TTFT for Gemma 4. */
         const val TIME_TO_FIRST_TOKEN_MS = 800L
 
         /** ~22 tokens/sec, the published GPU decode rate. */

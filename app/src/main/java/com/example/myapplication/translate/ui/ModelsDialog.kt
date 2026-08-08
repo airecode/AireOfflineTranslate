@@ -30,8 +30,9 @@ import com.example.myapplication.translate.translator.ModelVariant
 /**
  * Model manager: download, delete, and choose which variant translations run on.
  *
- * Both variants are always listed, installed or not, so the size trade-off is visible before
- * committing to a multi-gigabyte download rather than after.
+ * Variants are listed whether installed or not, so the download size is visible before committing
+ * to it rather than after. Only E2B ships today, so the selection control hides itself rather than
+ * offering a radio button with nothing to switch to.
  */
 @Composable
 fun ModelsDialog(
@@ -96,28 +97,39 @@ private fun ModelRow(
     onCancelDownload: () -> Unit,
     onDelete: () -> Unit,
 ) {
+    // A radio button is only meaningful when there is something to switch to.
+    val selectable = ModelVariant.entries.size > 1
+
     Row(
         // The whole row is the tap target, not just the radio circle. A ~20dp hit area next to a
         // full-width label is a trap: tapping the model name looks like selecting it and does
         // nothing. `selectable` also gives the row the right accessibility role.
         //
         // Selectable whether or not it is installed: choosing which model you want is what you do
-        // *before* downloading it, and gating selection on installation left both rows dead on a
-        // fresh install, with no way to pick the other one.
+        // *before* downloading it, and gating selection on installation left every row dead on a
+        // fresh install.
         Modifier
             .fillMaxWidth()
-            .selectable(
-                selected = isActive,
-                role = Role.RadioButton,
-                onClick = onSelect,
+            .then(
+                if (selectable) {
+                    Modifier.selectable(
+                        selected = isActive,
+                        role = Role.RadioButton,
+                        onClick = onSelect,
+                    )
+                } else {
+                    Modifier
+                }
             )
             .padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        RadioButton(
-            selected = isActive,
-            onClick = null, // handled by the row
-        )
+        if (selectable) {
+            RadioButton(
+                selected = isActive,
+                onClick = null, // handled by the row
+            )
+        }
         Column(Modifier.fillMaxWidth()) {
             Text(
                 text = variant.displayName,
@@ -127,7 +139,6 @@ private fun ModelRow(
             )
             Text(
                 text = when (variant) {
-                    ModelVariant.E4B -> stringResource(R.string.models_e4b_note, variant.sizeGb)
                     ModelVariant.E2B -> stringResource(R.string.models_e2b_note, variant.sizeGb)
                 },
                 fontSize = 12.sp,

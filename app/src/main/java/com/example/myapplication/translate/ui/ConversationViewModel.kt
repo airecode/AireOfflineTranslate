@@ -17,6 +17,7 @@ import com.example.myapplication.translate.speech.SpeechToText
 import com.example.myapplication.translate.translator.EngineStatus
 import com.example.myapplication.translate.translator.LiteRtTranslator
 import com.example.myapplication.translate.translator.ModelDownloader
+import com.example.myapplication.translate.translator.ModelLocation
 import com.example.myapplication.translate.translator.ModelVariant
 import com.example.myapplication.translate.translator.StubTranslator
 import com.example.myapplication.translate.translator.Translator
@@ -52,6 +53,13 @@ data class TranslateUiState(
     /** Download/installed state for every variant, so the models dialog can show them all. */
     val modelStates: Map<ModelVariant, ModelDownloader.State> = emptyMap(),
     val usingStubEngine: Boolean = false,
+    /**
+     * True between tapping cancel on the load dialog and the engine actually letting go. The
+     * dialog stays up for that window rather than closing optimistically, because the load is a
+     * blocking native call and pretending it stopped would leave the app looking idle while it is
+     * still holding the accelerator.
+     */
+    val cancellingLoad: Boolean = false,
     val message: String? = null,
     val splitFraction: Float = 0.5f,
     /** Panel that just copied, so it can show confirmation inside its own rotation. */
@@ -97,6 +105,7 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
     val state: StateFlow<TranslateUiState> = _state.asStateFlow()
 
     private var translationJob: Job? = null
+    private var loadJob: Job? = null
     private var engineStatusJob: Job? = null
     private val downloadJobs = mutableMapOf<ModelVariant, Job>()
     private var copyFeedbackJob: Job? = null
@@ -139,6 +148,17 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
         }
         _state.update { it.copy(activeVariant = startingVariant) }
 
+        // Reclaim weights for variants this build dropped. Off the main thread only because it
+        // touches external storage; unlinking even a 3.66 GB file is near-instant.
+        viewModelScope.launch {
+            val freed = withContext(Dispatchers.IO) { ModelLocation.pruneUnknown(application) }
+            if (freed > 0) {
+                val gb = String.format(java.util.Locale.US, "%.2f GB", freed / 1_000_000_000.0)
+                Log.i(TAG, "Removed $gb of unsupported model files")
+                _state.update { it.copy(message = str(R.string.msg_stale_model_removed, gb)) }
+            }
+        }
+
         refreshModelStates()
         if (modelDownloader.isInstalled(startingVariant)) {
             useRealEngine(startingVariant)
@@ -151,7 +171,7 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
     // ---- model lifecycle ---------------------------------------------------
 
     /**
-     * Loading is explicit, never automatic. The engine holds ~3.7 GB resident once initialised,
+     * Loading is explicit, never automatic. The engine holds ~2.6 GB resident once initialised,
      * which is a large share of an 8 GB phone, so the user decides when to pay for it.
      */
     fun onLoadModel() {
@@ -160,7 +180,25 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
         // Clear any stale notice first: the status strip prefers `message` over live engine
         // state, so leaving "Model unloaded" there would mask the load about to happen.
         _state.update { it.copy(message = null) }
-        viewModelScope.launch { translator.prepare() }
+        loadJob = viewModelScope.launch { translator.prepare() }
+    }
+
+    /**
+     * Abandons a load in progress.
+     *
+     * Three separate things have to be told, because the load can be reached three ways: the
+     * explicit load button ([loadJob]), an auto-load inside a translation ([translationJob]), and
+     * the engine itself, which is the only one that can release the native side.
+     */
+    fun onCancelLoad() {
+        if (_state.value.engineStatus !is EngineStatus.Loading) return
+        _state.update { it.copy(cancellingLoad = true) }
+        translator.cancelLoad()
+        loadJob?.cancel()
+        loadJob = null
+        // The translation that triggered the auto-load has nothing left to run.
+        translationJob?.cancel()
+        translationJob = null
     }
 
     fun onUnloadModel() {
@@ -190,7 +228,7 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
     /**
      * Starts the idle-unload countdown when the app leaves the foreground.
      *
-     * A backgrounded app holding ~3.7 GB is the first thing Android reclaims under pressure, and
+     * A backgrounded app holding ~2.6 GB is the first thing Android reclaims under pressure, and
      * being killed loses the conversation as well as the weights. Releasing them voluntarily after
      * a few minutes away keeps the process alive and cheap; reloading costs seconds, once.
      */
@@ -325,7 +363,18 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
         val active = translator
         engineStatusJob = viewModelScope.launch {
             active.status.collect { status ->
-                _state.update { it.copy(engineStatus = status) }
+                _state.update { current ->
+                    // Leaving Loading is the only signal that a cancel has actually taken effect —
+                    // the engine decides when, not us. That is what dismisses the dialog.
+                    val cancelled = current.cancellingLoad && status !is EngineStatus.Loading
+                    current.copy(
+                        engineStatus = status,
+                        cancellingLoad = if (status is EngineStatus.Loading) current.cancellingLoad else false,
+                        phase = if (cancelled) Phase.IDLE else current.phase,
+                        activeSide = if (cancelled) null else current.activeSide,
+                        message = if (cancelled) str(R.string.msg_load_cancelled) else current.message,
+                    )
+                }
             }
         }
     }

@@ -34,14 +34,14 @@ follows the phone's language setting.
 
 ## Device requirements
 
-This is a demanding app. A 4-billion-parameter model running locally is not free.
+This is a demanding app. A multi-billion-parameter model running locally is not free.
 
 | | |
 |---|---|
 | **Android** | 13 (API 33) or newer |
 | **CPU** | `arm64-v8a`. 32-bit ARM is **not supported** — LiteRT-LM ships no `armeabi-v7a` binary |
-| **RAM** | 8 GB or more for Gemma 4 E4B. E2B, the default, runs on less |
-| **Storage** | 2.6–3.7 GB for the model, plus headroom during download |
+| **RAM** | 6 GB or more. The engine holds roughly 2.6 GB resident while loaded |
+| **Storage** | 2.6 GB for the model, plus headroom during download |
 | **Services** | Google speech recognition and text-to-speech, with language packs installed for the languages you use |
 
 ### Accelerator support
@@ -63,15 +63,18 @@ LiteRT-LM defers kernel compilation and a backend that cannot run will still ini
 
 ## Models
 
-Nothing is bundled — the smallest build is 2.59 GB, far past Google Play's limits. Models are
-downloaded on demand from Hugging Face and can be deleted from the in-app model manager.
+Nothing is bundled — the model is 2.59 GB, far past Google Play's limits. It is downloaded on
+demand from Hugging Face and can be deleted again from the in-app model manager.
 
 | Variant | Size | Notes |
 |---|---|---|
-| Gemma 4 E2B | 2.59 GB | **Default.** Smaller and faster, for devices with less memory |
-| Gemma 4 E4B | 3.66 GB | Best quality. Needs 8 GB RAM or more |
+| Gemma 4 E2B | 2.59 GB | The only supported build |
 
-Each has four download sources tried in order. Note these are **not independent origins** — they
+The larger E4B was offered previously and has been dropped: it needed 8 GB of RAM to load, which
+ruled out most of the devices this app targets. Weights left behind by an older install are deleted
+automatically on first launch.
+
+There are four download sources, tried in order. Note these are **not independent origins** — they
 all terminate at the same Hugging Face CDN. They cover a blocked domain, a failed DNS lookup or a
 moved branch, not an outage at the source.
 
@@ -202,7 +205,7 @@ app/src/main/java/com/example/myapplication/
     │   ├── Translator.kt            Interface + prompts
     │   ├── LiteRtTranslator.kt      Gemma via LiteRT-LM, backend fallback
     │   ├── StubTranslator.kt        Fake engine mimicking real timings
-    │   ├── ModelVariant.kt          E4B / E2B catalogue and download sources
+    │   ├── ModelVariant.kt          Model catalogue and download sources
     │   ├── ModelLocation.kt         On-disk paths
     │   └── ModelDownloader.kt       Download, source switching, delete
     └── ui/                          Compose screen, ViewModel, dialogs, theme

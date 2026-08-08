@@ -80,9 +80,12 @@
     <string name="banner_wifi_only">仅限 Wi-Fi</string>
     <string name="notif_downloading_model">正在下载翻译模型</string>
     <string name="models_title">翻译模型</string>
-    <string name="models_body">两者均完全在您的设备上运行。下载仅使用 Wi-Fi。</string>
-    <string name="models_e4b_note">%1$s · 质量最佳，需 8 GB 以上内存</string>
+    <string name="models_body">完全在您的设备上运行。下载仅使用 Wi-Fi。</string>
     <string name="models_e2b_note">%1$s · 更小更快，适合内存较小的设备</string>
     <string name="msg_model_deleted">已删除 %1$s</string>
     <string name="cd_models">翻译模型</string>
+    <string name="msg_stale_model_removed">已删除 %1$s 不受支持的模型文件</string>
+    <string name="msg_load_cancelled">已取消模型加载</string>
+    <string name="loading_dialog_body">需要几秒钟，完成后才能翻译。</string>
+    <string name="loading_dialog_cancelling">正在取消…</string>
 </resources>

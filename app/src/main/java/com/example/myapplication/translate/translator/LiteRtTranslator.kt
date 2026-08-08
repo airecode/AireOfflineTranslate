@@ -24,9 +24,9 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 /**
- * Runs Gemma 4 E4B on-device through LiteRT-LM.
+ * Runs Gemma 4 E2B on-device through LiteRT-LM.
  *
- * Backend is GPU, not CPU, and that is not a tuning preference. Published Gemma 4 E4B figures put
+ * Backend is GPU, not CPU, and that is not a tuning preference. Published Gemma 4 figures put
  * CPU time-to-first-token at 5.3 s against 0.8 s on GPU; at 5 s per utterance the conversation UI
  * this app is built around stops working. CPU is therefore only used as an explicit fallback.
  */
@@ -42,6 +42,14 @@ class LiteRtTranslator(context: Context, private val variant: ModelVariant) : Tr
 
     @Volatile
     private var activeBackend: String = "unknown"
+
+    /**
+     * Set by [cancelLoad] and read at every point in [prepare] where the loop is between blocking
+     * native calls. A flag rather than coroutine cancellation because `initialize()` is a blocking
+     * JNI call: cancelling the coroutine would leave it running with nothing left to close it.
+     */
+    @Volatile
+    private var loadCancelled = false
 
     /**
      * Conversations awaiting close, retired lazily before the next run rather than at the end of
@@ -79,6 +87,7 @@ class LiteRtTranslator(context: Context, private val variant: ModelVariant) : Tr
             return
         }
 
+        loadCancelled = false
         _status.value = EngineStatus.Loading
         withContext(Dispatchers.IO) {
             val candidates = candidateBackends()
@@ -95,6 +104,12 @@ class LiteRtTranslator(context: Context, private val variant: ModelVariant) : Tr
             val failures = mutableListOf<String>()
 
             for (backend in candidates) {
+                if (loadCancelled) {
+                    Log.i(TAG, "Load cancelled before trying ${backend.name}")
+                    _status.value = EngineStatus.Idle
+                    return@withContext
+                }
+
                 var created: Engine? = null
                 try {
                     created = Engine(
@@ -121,6 +136,16 @@ class LiteRtTranslator(context: Context, private val variant: ModelVariant) : Tr
                     // backend and the real failure surfaces later, mid-translation.
                     probe(created)
 
+                    // The cancel could have arrived while initialize() or probe() was blocked. A
+                    // working engine is not worth keeping if the user has already said no: it
+                    // would hold ~2.6 GB that nothing is going to use.
+                    if (loadCancelled) {
+                        Log.i(TAG, "Load cancelled during ${backend.name}; discarding the engine")
+                        runCatching { created.close() }
+                        _status.value = EngineStatus.Idle
+                        return@withContext
+                    }
+
                     engine = created
                     activeBackend = backend.name
                     Log.i(TAG, "${variant.displayName} running on ${backend.name}")
@@ -133,9 +158,23 @@ class LiteRtTranslator(context: Context, private val variant: ModelVariant) : Tr
                 }
             }
 
+            if (loadCancelled) {
+                Log.i(TAG, "Load cancelled; not reporting the backend failures as an error")
+                _status.value = EngineStatus.Idle
+                return@withContext
+            }
+
             Log.e(TAG, "No usable backend for Gemma 4. Attempts: $failures")
             _status.value = EngineStatus.Unavailable("No backend accepted the model — $failures")
         }
+    }
+
+    /**
+     * Stops the load at the next point [prepare] is between native calls. See [Translator.cancelLoad]
+     * for why this cannot be immediate.
+     */
+    override fun cancelLoad() {
+        loadCancelled = true
     }
 
     /**

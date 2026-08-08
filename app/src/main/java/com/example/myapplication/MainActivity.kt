@@ -25,7 +25,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.translate.CrashReporter
 import com.example.myapplication.translate.billing.DonationBilling
+import com.example.myapplication.translate.translator.EngineStatus
 import com.example.myapplication.translate.ui.DonationDialog
+import com.example.myapplication.translate.ui.LoadingDialog
 import com.example.myapplication.translate.ui.ModelsDialog
 import com.example.myapplication.translate.ui.ConversationViewModel
 import com.example.myapplication.translate.ui.TranslateScreen
@@ -95,6 +97,17 @@ class MainActivity : ComponentActivity() {
                 DisposableEffect(billing) {
                     billing.start()
                     onDispose { billing.release() }
+                }
+
+                // Driven by engine status rather than a local flag, so it covers the auto-load
+                // paths — a mic tap or a photo with no model resident — and not just the load
+                // button.
+                if (state.engineStatus is EngineStatus.Loading) {
+                    LoadingDialog(
+                        modelName = state.activeVariant.displayName,
+                        cancelling = state.cancellingLoad,
+                        onCancel = viewModel::onCancelLoad,
+                    )
                 }
 
                 var showModels by remember { mutableStateOf(false) }

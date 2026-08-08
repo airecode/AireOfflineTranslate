@@ -80,9 +80,12 @@
     <string name="banner_wifi_only">Wi-Fi のみ</string>
     <string name="notif_downloading_model">翻訳モデルをダウンロード中</string>
     <string name="models_title">翻訳モデル</string>
-    <string name="models_body">どちらも端末内で完結します。ダウンロードは Wi-Fi のみです。</string>
-    <string name="models_e4b_note">%1$s · 最高品質、メモリ 8 GB 以上が必要</string>
+    <string name="models_body">端末内で完結します。ダウンロードは Wi-Fi のみです。</string>
     <string name="models_e2b_note">%1$s · 小さく高速、メモリの少ない端末向け</string>
     <string name="msg_model_deleted">%1$s を削除しました</string>
     <string name="cd_models">翻訳モデル</string>
+    <string name="msg_stale_model_removed">サポートされていないモデルファイル %1$s を削除しました</string>
+    <string name="msg_load_cancelled">モデルの読み込みをキャンセルしました</string>
+    <string name="loading_dialog_body">数秒かかります。完了するまで翻訳できません。</string>
+    <string name="loading_dialog_cancelling">キャンセルしています…</string>
 </resources>

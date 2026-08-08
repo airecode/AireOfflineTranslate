@@ -48,6 +48,29 @@ object ModelLocation {
     fun installedBytes(context: Context, variant: ModelVariant): Long =
         modelFile(context, variant).let { if (it.isFile) it.length() else 0L }
 
+    /**
+     * Deletes weights belonging to no [ModelVariant] this build knows about, returning the bytes
+     * reclaimed.
+     *
+     * Dropping a variant strands whatever the user had already downloaded for it: multiple
+     * gigabytes, in the app's own storage, with the row that could have deleted it now gone from
+     * the model manager. Short of uninstalling there would be no way to get the space back, so the
+     * files are removed on the first run of the build that stopped supporting them.
+     *
+     * Matching is by known-good name rather than by a list of retired ones, so this keeps working
+     * for any variant dropped later.
+     */
+    fun pruneUnknown(context: Context): Long {
+        val known = ModelVariant.entries.flatMap { listOf(it.fileName, it.fileName + PART_SUFFIX) }
+        return modelDir(context).listFiles()
+            .orEmpty()
+            .filter { it.isFile && it.name !in known }
+            .sumOf { file ->
+                val size = file.length()
+                if (file.delete()) size else 0L
+            }
+    }
+
     private fun modelDir(context: Context): File =
         File(context.getExternalFilesDir(null) ?: context.filesDir, SUBDIR).apply { mkdirs() }
 }

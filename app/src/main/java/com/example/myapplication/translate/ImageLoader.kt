@@ -14,7 +14,7 @@ import kotlin.math.max
  * Turns a picked or captured image into JPEG bytes suitable for the vision encoder.
  *
  * Two things matter here. Downscaling keeps a 12 MP camera photo from being handed to a model that
- * will resize it internally anyway — pointless memory pressure on a device already holding 3.7 GB
+ * will resize it internally anyway — pointless memory pressure on a device already holding ~2.6 GB
  * of weights. And EXIF rotation must be applied, because phone cameras record orientation in
  * metadata rather than rotating pixels, and text read sideways does not get read at all.
  */

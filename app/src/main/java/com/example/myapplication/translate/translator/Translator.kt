@@ -28,7 +28,7 @@ sealed interface EngineStatus {
  *
  * Everything above this interface — the UI, the push-to-talk state machine, ASR and TTS — is
  * independent of how translation actually happens. That is deliberate: it lets the app run against
- * [StubTranslator] while the 3.66 GB Gemma 4 model is absent, and it is where an AICore/Gemini Nano
+ * [StubTranslator] while the 2.59 GB Gemma 4 model is absent, and it is where an AICore/Gemini Nano
  * implementation would slot in without touching anything else.
  */
 interface Translator : AutoCloseable {
@@ -36,6 +36,16 @@ interface Translator : AutoCloseable {
 
     /** Loads the model. Safe to call more than once; subsequent calls are no-ops. */
     suspend fun prepare()
+
+    /**
+     * Asks an in-flight [prepare] to give up.
+     *
+     * Best-effort, and deliberately not a promise of immediacy: loading is a blocking native call
+     * that cannot be interrupted part-way. What this guarantees is that no backend attempt starts
+     * after the request, and that an engine which finishes initialising afterwards is closed rather
+     * than adopted. Status returns to [EngineStatus.Idle] once the call in flight unwinds.
+     */
+    fun cancelLoad()
 
     /**
      * Translates [text], emitting the result incrementally so the UI can stream it.

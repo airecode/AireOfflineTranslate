@@ -89,10 +89,13 @@
     <string name="action_delete">Delete</string>
     <string name="banner_wifi_only">Wi-Fi only</string>
     <string name="notif_downloading_model">Downloading translation model</string>
-    <string name="models_title">Translation models</string>
-    <string name="models_body">Both run entirely on your device. Downloads use Wi-Fi only.</string>
-    <string name="models_e4b_note">%1$s · best quality, needs 8 GB RAM or more</string>
+    <string name="models_title">Translation model</string>
+    <string name="models_body">Runs entirely on your device. Downloads use Wi-Fi only.</string>
     <string name="models_e2b_note">%1$s · smaller and faster, for devices with less memory</string>
     <string name="msg_model_deleted">%1$s deleted</string>
-    <string name="cd_models">Translation models</string>
+    <string name="cd_models">Translation model</string>
+    <string name="msg_stale_model_removed">Removed %1$s of unsupported model files</string>
+    <string name="msg_load_cancelled">Model loading cancelled</string>
+    <string name="loading_dialog_body">This takes a few seconds and must finish before translating.</string>
+    <string name="loading_dialog_cancelling">Cancelling…</string>
 </resources>

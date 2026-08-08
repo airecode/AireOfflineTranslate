@@ -79,10 +79,13 @@
     <string name="action_delete">Eliminar</string>
     <string name="banner_wifi_only">solo por Wi-Fi</string>
     <string name="notif_downloading_model">Descargando el modelo de traduccion</string>
-    <string name="models_title">Modelos de traduccion</string>
-    <string name="models_body">Ambos funcionan por completo en tu dispositivo. Las descargas usan solo Wi-Fi.</string>
-    <string name="models_e4b_note">%1$s · mejor calidad, necesita 8 GB de RAM o mas</string>
+    <string name="models_title">Modelo de traduccion</string>
+    <string name="models_body">Funciona por completo en tu dispositivo. Las descargas usan solo Wi-Fi.</string>
     <string name="models_e2b_note">%1$s · mas pequeno y rapido, para dispositivos con menos memoria</string>
     <string name="msg_model_deleted">%1$s eliminado</string>
-    <string name="cd_models">Modelos de traduccion</string>
+    <string name="cd_models">Modelo de traduccion</string>
+    <string name="msg_stale_model_removed">Se eliminaron %1$s de archivos de modelo no compatibles</string>
+    <string name="msg_load_cancelled">Carga del modelo cancelada</string>
+    <string name="loading_dialog_body">Tarda unos segundos y debe terminar antes de traducir.</string>
+    <string name="loading_dialog_cancelling">Cancelando…</string>
 </resources>

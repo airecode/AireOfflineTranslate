@@ -308,7 +308,7 @@ private fun StatusStrip(state: TranslateUiState, micPermissionGranted: Boolean) 
 }
 
 /**
- * First-run model acquisition. The 3.66 GB weights cannot ship in the APK — Play caps a base
+ * First-run model acquisition. The 2.59 GB weights cannot ship in the APK — Play caps a base
  * module at 200 MB — so the app fetches them once, here.
  */
 @Composable
