@@ -1,6 +1,12 @@
 package com.example.myapplication.translate.ui
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
@@ -10,6 +16,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -19,10 +26,11 @@ import com.example.myapplication.R
 /**
  * Modal shown while a side is recording.
  *
- * The ring is a live microphone level, not elapsed time. Recording has no known length, so a
- * progress indicator can only honestly report one thing — whether the microphone is hearing
- * anything — and that happens to be the single question a user has while speaking into a phone
- * lying on a table.
+ * The ring turns continuously for as long as recording lasts, and its arc length is a live
+ * microphone level. Neither is elapsed time: recording has no known length, so a progress indicator
+ * can only honestly report that it is running and that the microphone is hearing something — which
+ * between them are the whole of what a user wants to know while speaking into a phone lying on a
+ * table.
  *
  * [partialText] is the recogniser's running hypothesis. It is already going to the panel behind
  * this dialog, but the dialog covers it, and watching the words appear is how the user knows they
@@ -39,8 +47,26 @@ fun RecordingDialog(
     onCancel: () -> Unit,
 ) {
     // The recogniser reports roughly ten times a second; animating between readings turns that
-    // into a bar that moves with the voice rather than one that steps.
+    // into a ring that moves with the voice rather than one that steps.
     val animatedLevel by animateFloatAsState(targetValue = level, label = "micLevel")
+
+    // Floored so there is always an arc to see turning. Without it silence leaves the ring empty,
+    // the rotation becomes invisible, and the dialog looks frozen at exactly the moment the user is
+    // wondering whether the microphone is on. Presence says "recording", length still says "level".
+    val arc = MIN_ARC + animatedLevel * (1f - MIN_ARC)
+
+    val spin = rememberInfiniteTransition(label = "recordSpin")
+    val angle by spin.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            // Linear, and Restart rather than Reverse: anything else makes the ring slow at the
+            // wrap or swing back on itself instead of turning steadily.
+            animation = tween(durationMillis = SPIN_MS, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart,
+        ),
+        label = "recordSpinAngle",
+    )
 
     AlertDialog(
         onDismissRequest = {},
@@ -52,8 +78,12 @@ fun RecordingDialog(
         // spinner — the two read as siblings rather than two unrelated designs.
         icon = {
             CircularProgressIndicator(
-                progress = { animatedLevel },
-                modifier = Modifier.size(40.dp),
+                progress = { arc },
+                // Rotating the whole indicator rather than animating its start angle: the arc keeps
+                // its determinate length, so the level reading survives the spin.
+                modifier = Modifier
+                    .size(40.dp)
+                    .rotate(angle),
                 strokeWidth = 4.dp,
                 color = MaterialTheme.colorScheme.primary,
                 // Tinted rather than surfaceVariant, which is close enough to the dialog's own
@@ -91,3 +121,9 @@ fun RecordingDialog(
         },
     )
 }
+
+/** One full revolution. Fast, because it has to read as "live" at a glance. */
+private const val SPIN_MS = 500
+
+/** Shortest arc drawn, as a fraction of the ring. Enough to see turning in silence. */
+private const val MIN_ARC = 0.10f
