@@ -13,10 +13,8 @@ Translation runs on **Gemma 4** via Google's LiteRT-LM runtime.
 The screen is split into two halves, the upper one rotated 180° so it faces the person across the
 table. Each half shows its own language and has its own microphone, replay and copy controls.
 
-- **Speak** — tap the microphone and speak. A dialog takes over the screen showing a live
-  microphone level, so you can see it is hearing you, and the words as they are recognised. Done
-  keeps the turn, Cancel throws it away. The transcript appears on the speaker's half, the
-  translation on the listener's, and is read aloud in the listener's language.
+- **Speak** — tap the microphone, speak, tap stop. The transcript appears on the speaker's half,
+  the translation on the listener's, and is read aloud in the listener's language.
 - **Type** — a keyboard button on the lower half for text input.
 - **Camera** — point it at a sign or a menu. There is no shutter button: the app watches for you
   to stop moving and takes the frame itself. It reads one frame per opening rather than
@@ -30,10 +28,12 @@ table. Each half shows its own language and has its own microphone, replay and c
 - **New session** — a restart button appears beside the input controls once a turn has finished,
   and clears both halves. It leaves the languages, split position and panel rotation alone: those
   are deliberate choices, and wiping them would make "new session" mean "undo my setup".
-- **Blocking dialogs** — recording, model loading and translating each take over the screen while
-  they run, every one of them with its own cancel. Nothing else the app offers works until they
-  finish, so leaving the rest of the UI live only ever produced taps that queued up behind the
-  turn already in progress.
+- **Cancel** — the microphone becomes a red stop square while recording, and a red cross while
+  speaking, which abandons the run.
+- **Blocking dialogs** — model loading and translating each take over the screen while they run,
+  both with their own cancel. Nothing else the app offers works until they finish, so leaving the
+  rest of the UI live only ever produced taps that queued up behind the turn already in progress.
+  Recording is not one of them: the microphone button itself becomes the stop button.
 
 18 languages: English, Arabic, Chinese (Simplified and Traditional), Filipino, French, German,
 Hebrew, Hindi, Japanese, Korean, Malay, Russian, Spanish, Tamil, Thai, Turkish, Vietnamese.

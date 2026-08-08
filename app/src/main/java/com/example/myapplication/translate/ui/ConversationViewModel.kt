@@ -60,8 +60,6 @@ data class TranslateUiState(
      * still holding the accelerator.
      */
     val cancellingLoad: Boolean = false,
-    /** Smoothed microphone level, 0–1, for the recording dialog's meter. */
-    val recordingLevel: Float = 0f,
     val message: String? = null,
     val splitFraction: Float = 0.5f,
     /** Panel that just copied, so it can show confirmation inside its own rotation. */
@@ -455,26 +453,8 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
                 }
 
                 override fun onError(message: String) = failWith(message)
-
-                override fun onLevel(rmsDb: Float) {
-                    val normalised = ((rmsDb - QUIET_DB) / (LOUD_DB - QUIET_DB)).coerceIn(0f, 1f)
-                    _state.update {
-                        // Eased towards the new value rather than snapped to it: the raw reading
-                        // swings hard enough between callbacks that a bar following it directly
-                        // reads as flicker instead of level.
-                        it.copy(
-                            recordingLevel =
-                                it.recordingLevel + (normalised - it.recordingLevel) * LEVEL_EASING
-                        )
-                    }
-                }
             },
         )
-    }
-
-    /** The recording dialog's "Done": stop listening and let the pipeline run. */
-    fun onFinishRecording() {
-        stopRecording(_state.value.activeSide ?: return)
     }
 
     private fun stopRecording(side: Side) {
@@ -483,7 +463,7 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
 
         // The final transcript arrives asynchronously; show the transition immediately so the
         // tap is acknowledged rather than appearing to do nothing.
-        _state.update { it.copy(phase = Phase.TRANSLATING, recordingLevel = 0f) }
+        _state.update { it.copy(phase = Phase.TRANSLATING) }
         speechToText.stop()
     }
 
@@ -506,7 +486,6 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
                 activeSide = null,
                 phase = Phase.IDLE,
                 copiedSide = null,
-                recordingLevel = 0f,
                 message = null,
             )
         }
@@ -923,16 +902,5 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
         const val KEY_ACTIVE_VARIANT = "active_variant"
         const val KEY_NEAR_LANGUAGE = "near_language"
         const val KEY_FAR_LANGUAGE = "far_language"
-
-        /**
-         * SpeechRecognizer does not specify its RMS range beyond "typically -2 to 10 dB", so
-         * anything outside these bounds is clamped rather than allowed to distort the rest of the
-         * scale. Only the meter depends on this being right.
-         */
-        const val QUIET_DB = -2f
-        const val LOUD_DB = 10f
-
-        /** Fraction of the gap to the new reading applied per callback. */
-        const val LEVEL_EASING = 0.35f
     }
 }

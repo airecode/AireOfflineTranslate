@@ -16,6 +16,7 @@
     <string name="hint_type_text">翻訳するテキストを入力</string>
 
     <string name="status_mic_permission">翻訳するにはマイクの許可が必要です</string>
+    <string name="status_recording">録音中…話し終えたら停止をタップ</string>
     <string name="status_speaking">読み上げ中…停止でキャンセル</string>
     <string name="status_loading_model">%1$s を読み込み中…</string>
     <string name="status_model_loaded">%1$s 読み込み済み · %2$s</string>
@@ -94,8 +95,5 @@
     <string name="camera_hint_capturing">撮影中…</string>
     <string name="msg_camera_unavailable">カメラを利用できません</string>
     <string name="msg_camera_permission">文字を読み取るにはカメラの権限が必要です</string>
-    <string name="recording_dialog_title">録音中…</string>
-    <string name="recording_dialog_hint">話し終えたら「完了」をタップしてください。</string>
-    <string name="action_done">完了</string>
     <string name="cd_restart">新しいセッションを開始</string>
 </resources>

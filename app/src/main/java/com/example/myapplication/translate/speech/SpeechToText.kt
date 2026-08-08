@@ -34,15 +34,6 @@ class SpeechToText(context: Context) {
         fun onPartial(text: String)
         fun onFinal(text: String)
         fun onError(message: String)
-
-        /**
-         * Microphone level while recording, in the recogniser's own dB scale.
-         *
-         * Purely presentational — a level that moves with the voice is the one honest answer to
-         * "is it hearing me?", which is the only thing a user wants to know mid-recording. Given a
-         * default so a listener that does not draw anything can ignore it.
-         */
-        fun onLevel(rmsDb: Float) = Unit
     }
 
     /** True once [start] has been called and no final result or error has arrived yet. */
@@ -72,7 +63,7 @@ class SpeechToText(context: Context) {
         created.setRecognitionListener(object : RecognitionListener {
             override fun onReadyForSpeech(params: Bundle?) = Unit
             override fun onBeginningOfSpeech() = Unit
-            override fun onRmsChanged(rmsdB: Float) = listener.onLevel(rmsdB)
+            override fun onRmsChanged(rmsdB: Float) = Unit
             override fun onBufferReceived(buffer: ByteArray?) = Unit
             override fun onEndOfSpeech() = Unit
             override fun onEvent(eventType: Int, params: Bundle?) = Unit

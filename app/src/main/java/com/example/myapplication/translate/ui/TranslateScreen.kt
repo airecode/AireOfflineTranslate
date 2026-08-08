@@ -271,9 +271,9 @@ private fun StatusStrip(state: TranslateUiState, micPermissionGranted: Boolean) 
         !micPermissionGranted -> stringResource(R.string.status_mic_permission)
         state.message != null -> state.message
         // Phase first: during a run the user cares what the app is doing, not what is loaded.
-        // LISTENING and TRANSLATING are absent deliberately — their own dialogs own those phases,
-        // and repeating the message in the strip underneath was noise. SPEAKING has no dialog, so
-        // the strip is the only place that can say anything.
+        // TRANSLATING is absent deliberately — RunProgressDialog owns that phase, and repeating the
+        // message in the strip underneath it was noise.
+        state.phase == Phase.LISTENING -> stringResource(R.string.status_recording)
         state.phase == Phase.SPEAKING -> stringResource(R.string.status_speaking)
         // Names the variant being loaded. A hardcoded model name here made switching to E2B
         // look like it had not taken effect.

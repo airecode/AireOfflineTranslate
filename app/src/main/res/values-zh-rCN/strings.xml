@@ -16,6 +16,7 @@
     <string name="hint_type_text">输入要翻译的文本</string>
 
     <string name="status_mic_permission">翻译需要麦克风权限</string>
+    <string name="status_recording">录音中…说完后请点击停止</string>
     <string name="status_speaking">朗读中…点击停止可取消</string>
     <string name="status_loading_model">正在加载 %1$s…</string>
     <string name="status_model_loaded">%1$s 已加载 · %2$s</string>
@@ -94,8 +95,5 @@
     <string name="camera_hint_capturing">正在拍摄…</string>
     <string name="msg_camera_unavailable">相机不可用</string>
     <string name="msg_camera_permission">扫描文字需要相机权限</string>
-    <string name="recording_dialog_title">正在录音…</string>
-    <string name="recording_dialog_hint">请说话，说完后点按“完成”。</string>
-    <string name="action_done">完成</string>
     <string name="cd_restart">开始新会话</string>
 </resources>

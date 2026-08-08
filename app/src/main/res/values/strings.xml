@@ -21,6 +21,7 @@
 
     <!-- Status strip -->
     <string name="status_mic_permission">Microphone permission is required to translate</string>
+    <string name="status_recording">Recording… tap stop when you finish speaking</string>
     <string name="status_speaking">Speaking… tap stop to cancel</string>
     <string name="status_loading_model">Loading %1$s…</string>
     <string name="status_model_loaded">%1$s loaded · %2$s</string>
@@ -104,8 +105,5 @@
     <string name="camera_hint_capturing">Capturing…</string>
     <string name="msg_camera_unavailable">Camera unavailable</string>
     <string name="msg_camera_permission">Camera permission is required to scan text</string>
-    <string name="recording_dialog_title">Recording…</string>
-    <string name="recording_dialog_hint">Speak now, then tap Done.</string>
-    <string name="action_done">Done</string>
     <string name="cd_restart">Start a new session</string>
 </resources>

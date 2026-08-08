@@ -31,7 +31,6 @@ import com.example.myapplication.translate.ui.DonationDialog
 import com.example.myapplication.translate.ui.LoadingDialog
 import com.example.myapplication.translate.ui.ModelsDialog
 import com.example.myapplication.translate.ui.Phase
-import com.example.myapplication.translate.ui.RecordingDialog
 import com.example.myapplication.translate.ui.RunProgressDialog
 import com.example.myapplication.translate.ui.ConversationViewModel
 import com.example.myapplication.translate.ui.TranslateScreen
@@ -145,6 +144,10 @@ class MainActivity : ComponentActivity() {
                 // TRANSLATING and Loading — and stacking two dialogs would show the user two
                 // cancel buttons over each other. Loading wins because it is the more specific
                 // thing to say, and cancelling it abandons the run as well.
+                //
+                // LISTENING and SPEAKING have no dialog. Recording is driven by the panel's own
+                // microphone button, which becomes a stop button; speaking has the translation on
+                // screen already and the user should be able to read along.
                 when {
                     // Driven by engine status rather than a local flag, so this covers the
                     // auto-load paths and not just the load button.
@@ -154,16 +157,6 @@ class MainActivity : ComponentActivity() {
                         onCancel = viewModel::onCancelLoad,
                     )
 
-                    state.phase == Phase.LISTENING -> RecordingDialog(
-                        level = state.recordingLevel,
-                        // The recording side's own panel: that is where the transcript is going.
-                        partialText = state.activeSide?.let(state::textFor).orEmpty(),
-                        onDone = viewModel::onFinishRecording,
-                        onCancel = viewModel::onCancelRun,
-                    )
-
-                    // SPEAKING is deliberately not covered: the translation is on screen by then
-                    // and the user should be able to read along while it is spoken.
                     state.phase == Phase.TRANSLATING -> RunProgressDialog(
                         onCancel = viewModel::onCancelRun,
                     )
