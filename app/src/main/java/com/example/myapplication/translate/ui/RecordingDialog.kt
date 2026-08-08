@@ -1,12 +1,9 @@
 package com.example.myapplication.translate.ui
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -22,10 +19,10 @@ import com.example.myapplication.R
 /**
  * Modal shown while a side is recording.
  *
- * The bar is a live microphone level, not elapsed time. Recording has no known length, so a
- * progress bar can only honestly report one thing — whether the microphone is hearing anything —
- * and that happens to be the single question a user has while speaking into a phone lying on a
- * table.
+ * The ring is a live microphone level, not elapsed time. Recording has no known length, so a
+ * progress indicator can only honestly report one thing — whether the microphone is hearing
+ * anything — and that happens to be the single question a user has while speaking into a phone
+ * lying on a table.
  *
  * [partialText] is the recogniser's running hypothesis. It is already going to the panel behind
  * this dialog, but the dialog covers it, and watching the words appear is how the user knows they
@@ -51,32 +48,30 @@ fun RecordingDialog(
             dismissOnBackPress = false,
             dismissOnClickOutside = false,
         ),
+        // The icon slot centres the meter above the title, which is where LoadingDialog puts its
+        // spinner — the two read as siblings rather than two unrelated designs.
+        icon = {
+            CircularProgressIndicator(
+                progress = { animatedLevel },
+                modifier = Modifier.size(40.dp),
+                strokeWidth = 4.dp,
+                color = MaterialTheme.colorScheme.primary,
+                // Tinted rather than surfaceVariant, which is close enough to the dialog's own
+                // surface that at silence the ring looked absent instead of empty.
+                trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+            )
+        },
         title = { Text(stringResource(R.string.recording_dialog_title)) },
         text = {
-            Column(Modifier.fillMaxWidth()) {
-                Text(
-                    text = partialText.ifBlank { stringResource(R.string.recording_dialog_hint) },
-                    fontSize = 13.sp,
-                    color = if (partialText.isBlank()) {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    } else {
-                        MaterialTheme.colorScheme.onSurface
-                    },
-                )
-                LinearProgressIndicator(
-                    progress = { animatedLevel },
-                    // Padding before height: the other way round the padding eats into the 6dp
-                    // rather than sitting outside it, and the bar collapses.
-                    modifier = Modifier
-                        .padding(top = 14.dp)
-                        .fillMaxWidth()
-                        .height(6.dp),
-                    color = MaterialTheme.colorScheme.primary,
-                    // Tinted rather than surfaceVariant, which is close enough to the dialog's own
-                    // surface that at silence the bar looked absent instead of empty.
-                    trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
-                )
-            }
+            Text(
+                text = partialText.ifBlank { stringResource(R.string.recording_dialog_hint) },
+                fontSize = 13.sp,
+                color = if (partialText.isBlank()) {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                } else {
+                    MaterialTheme.colorScheme.onSurface
+                },
+            )
         },
         confirmButton = {
             TextButton(onClick = onDone) {
