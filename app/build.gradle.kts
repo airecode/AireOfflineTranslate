@@ -14,8 +14,8 @@ android {
         applicationId = "com.aire.translate"
         minSdk = 33
         targetSdk = 37
-        versionCode = 34
-        versionName = "4.3-camera-ocr"
+        versionCode = 35
+        versionName = "4.4-record-restart"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -16,7 +16,6 @@
     <string name="hint_type_text">Escribe el texto que quieres traducir</string>
 
     <string name="status_mic_permission">Se necesita permiso de micrófono para traducir</string>
-    <string name="status_recording">Grabando… toca detener cuando termines de hablar</string>
     <string name="status_speaking">Reproduciendo… toca detener para cancelar</string>
     <string name="status_loading_model">Cargando %1$s…</string>
     <string name="status_model_loaded">%1$s cargado · %2$s</string>
@@ -95,4 +94,8 @@
     <string name="camera_hint_capturing">Capturando…</string>
     <string name="msg_camera_unavailable">Camara no disponible</string>
     <string name="msg_camera_permission">Se necesita permiso de camara para escanear texto</string>
+    <string name="recording_dialog_title">Grabando…</string>
+    <string name="recording_dialog_hint">Habla ahora y luego pulsa Listo.</string>
+    <string name="action_done">Listo</string>
+    <string name="cd_restart">Iniciar una sesion nueva</string>
 </resources>

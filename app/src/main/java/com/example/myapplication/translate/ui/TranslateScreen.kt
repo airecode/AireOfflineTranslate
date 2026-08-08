@@ -94,6 +94,7 @@ fun TranslateScreen(
     onTranslateTypedText: (String) -> Unit,
     onPickPhoto: () -> Unit,
     onScanCamera: () -> Unit,
+    onRestartSession: () -> Unit,
     onManageModels: () -> Unit,
     onLoadModel: () -> Unit,
     onUnloadModel: () -> Unit,
@@ -143,6 +144,7 @@ fun TranslateScreen(
                 onTranslateTypedText = onTranslateTypedText,
                 onPickPhoto = onPickPhoto,
                 onScanCamera = onScanCamera,
+                onRestartSession = onRestartSession,
                 onSwapLanguages = onSwapLanguages,
                 onLanguageSelected = onLanguageSelected,
             )
@@ -165,6 +167,7 @@ fun TranslateScreen(
                 onTranslateTypedText = onTranslateTypedText,
                 onPickPhoto = onPickPhoto,
                 onScanCamera = onScanCamera,
+                onRestartSession = onRestartSession,
                 onSwapLanguages = onSwapLanguages,
                 onLanguageSelected = onLanguageSelected,
             )
@@ -268,9 +271,9 @@ private fun StatusStrip(state: TranslateUiState, micPermissionGranted: Boolean) 
         !micPermissionGranted -> stringResource(R.string.status_mic_permission)
         state.message != null -> state.message
         // Phase first: during a run the user cares what the app is doing, not what is loaded.
-        // TRANSLATING is absent deliberately — RunProgressDialog owns that phase now, and saying
-        // the same thing in the strip underneath it was just noise.
-        state.phase == Phase.LISTENING -> stringResource(R.string.status_recording)
+        // LISTENING and TRANSLATING are absent deliberately — their own dialogs own those phases,
+        // and repeating the message in the strip underneath was noise. SPEAKING has no dialog, so
+        // the strip is the only place that can say anything.
         state.phase == Phase.SPEAKING -> stringResource(R.string.status_speaking)
         // Names the variant being loaded. A hardcoded model name here made switching to E2B
         // look like it had not taken effect.
@@ -406,6 +409,7 @@ private fun TranslatorPanel(
     onTranslateTypedText: (String) -> Unit,
     onPickPhoto: () -> Unit,
     onScanCamera: () -> Unit,
+    onRestartSession: () -> Unit,
     onSwapLanguages: () -> Unit,
     onLanguageSelected: (Side, Language) -> Unit,
 ) {
@@ -499,6 +503,8 @@ private fun TranslatorPanel(
                     onSubmit = onTranslateTypedText,
                     onPickPhoto = onPickPhoto,
                     onScanCamera = onScanCamera,
+                    canRestart = !state.isBusy && state.hasTranscript,
+                    onRestartSession = onRestartSession,
                 )
             }
 
@@ -528,6 +534,8 @@ private fun TypedInputRow(
     onSubmit: (String) -> Unit,
     onPickPhoto: () -> Unit,
     onScanCamera: () -> Unit,
+    canRestart: Boolean,
+    onRestartSession: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
     var draft by remember { mutableStateOf("") }
@@ -571,6 +579,17 @@ private fun TypedInputRow(
                     contentDescription = stringResource(R.string.cd_pick_photo),
                     tint = MaterialTheme.colorScheme.primary,
                 )
+            }
+            // Only once there is a finished turn to clear. Shown permanently it would be a button
+            // that does nothing for most of the app's life.
+            if (canRestart) {
+                IconButton(onClick = onRestartSession) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_restart),
+                        contentDescription = stringResource(R.string.cd_restart),
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                }
             }
         }
         return

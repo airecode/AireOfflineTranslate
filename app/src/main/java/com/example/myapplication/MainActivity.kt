@@ -31,6 +31,7 @@ import com.example.myapplication.translate.ui.DonationDialog
 import com.example.myapplication.translate.ui.LoadingDialog
 import com.example.myapplication.translate.ui.ModelsDialog
 import com.example.myapplication.translate.ui.Phase
+import com.example.myapplication.translate.ui.RecordingDialog
 import com.example.myapplication.translate.ui.RunProgressDialog
 import com.example.myapplication.translate.ui.ConversationViewModel
 import com.example.myapplication.translate.ui.TranslateScreen
@@ -153,6 +154,14 @@ class MainActivity : ComponentActivity() {
                         onCancel = viewModel::onCancelLoad,
                     )
 
+                    state.phase == Phase.LISTENING -> RecordingDialog(
+                        level = state.recordingLevel,
+                        // The recording side's own panel: that is where the transcript is going.
+                        partialText = state.activeSide?.let(state::textFor).orEmpty(),
+                        onDone = viewModel::onFinishRecording,
+                        onCancel = viewModel::onCancelRun,
+                    )
+
                     // SPEAKING is deliberately not covered: the translation is on screen by then
                     // and the user should be able to read along while it is spoken.
                     state.phase == Phase.TRANSLATING -> RunProgressDialog(
@@ -203,6 +212,7 @@ class MainActivity : ComponentActivity() {
                     // No onExternalActivityLaunched: the camera is a dialog inside this app, not a
                     // hand-off, so the idle-unload countdown must not start.
                     onScanCamera = { scanWithCamera() },
+                    onRestartSession = viewModel::onRestartSession,
                     onManageModels = { showModels = true },
                     onLoadModel = viewModel::onLoadModel,
                     onUnloadModel = viewModel::onUnloadModel,

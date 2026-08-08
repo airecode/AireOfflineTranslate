@@ -16,7 +16,6 @@
     <string name="hint_type_text">اكتب النص المراد ترجمته</string>
 
     <string name="status_mic_permission">الترجمة تتطلب إذن الميكروفون</string>
-    <string name="status_recording">جارٍ التسجيل… اضغط إيقاف عند انتهائك من الكلام</string>
     <string name="status_speaking">جارٍ القراءة… اضغط إيقاف للإلغاء</string>
     <string name="status_loading_model">جارٍ تحميل %1$s…</string>
     <string name="status_model_loaded">تم تحميل %1$s · %2$s</string>
@@ -95,4 +94,8 @@
     <string name="camera_hint_capturing">جارٍ التصوير…</string>
     <string name="msg_camera_unavailable">الكاميرا غير متوفرة</string>
     <string name="msg_camera_permission">إذن الكاميرا مطلوب لمسح النص</string>
+    <string name="recording_dialog_title">جارٍ التسجيل…</string>
+    <string name="recording_dialog_hint">تحدّث الآن، ثم اضغط تم.</string>
+    <string name="action_done">تم</string>
+    <string name="cd_restart">بدء جلسة جديدة</string>
 </resources>
