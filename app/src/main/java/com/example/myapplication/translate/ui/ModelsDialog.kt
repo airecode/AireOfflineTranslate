@@ -87,6 +87,63 @@ fun ModelsDialog(
     )
 }
 
+/**
+ * Raised when the user tries to do something the model is needed for and it is not there.
+ *
+ * Deliberately the same shape as the manager above, reusing the same [ModelRow], so the download it
+ * offers is visibly the identical thing — including its progress and failure states, which matter
+ * more here than anywhere else: this dialog is the one place a user meets the download because they
+ * wanted to translate something, not because they went looking for settings.
+ */
+@Composable
+fun ModelRequiredDialog(
+    variant: ModelVariant,
+    state: ModelDownloader.State,
+    onDownload: () -> Unit,
+    onCancelDownload: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.model_required_title)) },
+        text = {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+            ) {
+                Text(
+                    text = stringResource(R.string.model_required_body),
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                HorizontalDivider(
+                    Modifier.padding(vertical = 10.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant,
+                )
+                ModelRow(
+                    variant = variant,
+                    state = state,
+                    isActive = true,
+                    onSelect = {},
+                    onDownload = onDownload,
+                    onCancelDownload = onCancelDownload,
+                    // Nothing to delete: this only ever shows for a model that is not installed.
+                    onDelete = {},
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text = stringResource(R.string.action_close),
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
+        },
+    )
+}
+
 @Composable
 private fun ModelRow(
     variant: ModelVariant,

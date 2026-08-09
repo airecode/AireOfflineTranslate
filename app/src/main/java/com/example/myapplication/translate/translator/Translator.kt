@@ -27,9 +27,12 @@ sealed interface EngineStatus {
  * Translates text between two languages.
  *
  * Everything above this interface — the UI, the push-to-talk state machine, ASR and TTS — is
- * independent of how translation actually happens. That is deliberate: it lets the app run against
- * [StubTranslator] while the 2.59 GB Gemma 4 model is absent, and it is where an AICore/Gemini Nano
+ * independent of how translation actually happens. That is where an AICore/Gemini Nano
  * implementation would slot in without touching anything else.
+ *
+ * There is deliberately no fake implementation any more. One existed to stand in while the weights
+ * were absent, but an engine that answers with invented translations is indistinguishable from a
+ * working one to the person reading the screen, which makes it worse than no engine at all.
  */
 interface Translator : AutoCloseable {
     val status: StateFlow<EngineStatus>

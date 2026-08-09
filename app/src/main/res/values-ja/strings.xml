@@ -20,7 +20,6 @@
     <string name="status_speaking">読み上げ中…停止でキャンセル</string>
     <string name="status_loading_model">%1$s を読み込み中…</string>
     <string name="status_model_loaded">%1$s 読み込み済み · %2$s</string>
-    <string name="status_demo_engine">デモエンジンを読み込みました</string>
     <string name="status_model_not_loaded">モデル未読み込み — 読み込みアイコンをタップ</string>
     <string name="status_unknown_backend">不明なバックエンド</string>
 
@@ -97,4 +96,6 @@
     <string name="msg_camera_permission">文字を読み取るにはカメラの権限が必要です</string>
     <string name="cd_restart">新しいセッションを開始</string>
     <string name="action_start">開始</string>
+    <string name="model_required_title">翻訳モデルが必要です</string>
+    <string name="model_required_body">モデルを端末にダウンロードするまで翻訳できません。ダウンロードは一度だけで、その後はすべてオフラインで動作します。</string>
 </resources>

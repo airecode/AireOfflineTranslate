@@ -20,7 +20,6 @@
     <string name="status_speaking">جارٍ القراءة… اضغط إيقاف للإلغاء</string>
     <string name="status_loading_model">جارٍ تحميل %1$s…</string>
     <string name="status_model_loaded">تم تحميل %1$s · %2$s</string>
-    <string name="status_demo_engine">تم تحميل المحرك التجريبي</string>
     <string name="status_model_not_loaded">النموذج غير محمّل — اضغط أيقونة التحميل</string>
     <string name="status_unknown_backend">محرك غير معروف</string>
 
@@ -97,4 +96,6 @@
     <string name="msg_camera_permission">إذن الكاميرا مطلوب لمسح النص</string>
     <string name="cd_restart">بدء جلسة جديدة</string>
     <string name="action_start">ابدأ</string>
+    <string name="model_required_title">يلزم نموذج الترجمة</string>
+    <string name="model_required_body">لا يمكن الترجمة قبل تنزيل النموذج على الجهاز. يُنزّل مرة واحدة، ثم تعمل الترجمة بالكامل دون اتصال.</string>
 </resources>

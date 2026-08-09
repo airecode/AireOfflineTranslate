@@ -29,6 +29,7 @@ import com.example.myapplication.translate.translator.EngineStatus
 import com.example.myapplication.translate.ui.CameraOcrDialog
 import com.example.myapplication.translate.ui.DonationDialog
 import com.example.myapplication.translate.ui.LoadingDialog
+import com.example.myapplication.translate.ui.ModelRequiredDialog
 import com.example.myapplication.translate.ui.ModelsDialog
 import com.example.myapplication.translate.ui.Phase
 import com.example.myapplication.translate.ui.RunProgressDialog
@@ -86,6 +87,10 @@ class MainActivity : ComponentActivity() {
                 }
 
                 fun scanWithCamera() {
+                    // Checked before the permission prompt, not after: asking for the camera and
+                    // then saying the model is missing is two dialogs to reach a dead end.
+                    if (!viewModel.canStartModelAction()) return
+
                     val granted = ContextCompat.checkSelfPermission(
                         this,
                         Manifest.permission.CAMERA,
@@ -162,6 +167,16 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
+                if (state.modelRequired) {
+                    ModelRequiredDialog(
+                        variant = state.activeVariant,
+                        state = state.activeModelState,
+                        onDownload = { viewModel.onDownloadModel(state.activeVariant) },
+                        onCancelDownload = { viewModel.onCancelDownload(state.activeVariant) },
+                        onDismiss = viewModel::onDismissModelRequired,
+                    )
+                }
+
                 var showModels by remember { mutableStateOf(false) }
                 if (showModels) {
                     ModelsDialog(
@@ -197,10 +212,15 @@ class MainActivity : ComponentActivity() {
                     onRestoreLayout = viewModel::onRestoreLayout,
                     onTranslateTypedText = viewModel::onTranslateTypedText,
                     onPickPhoto = {
-                        viewModel.onExternalActivityLaunched()
-                        pickPhoto.launch(
-                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                        )
+                        // Same reason as the camera: sending the user into the system picker to
+                        // choose a photo, then telling them it cannot be translated, wastes the
+                        // trip. The run itself is gated too, but by then it is too late to matter.
+                        if (viewModel.canStartModelAction()) {
+                            viewModel.onExternalActivityLaunched()
+                            pickPhoto.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+                        }
                     },
                     // No onExternalActivityLaunched: the camera is a dialog inside this app, not a
                     // hand-off, so the idle-unload countdown must not start.

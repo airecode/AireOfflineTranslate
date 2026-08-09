@@ -20,7 +20,6 @@
     <string name="status_speaking">朗读中…点击停止可取消</string>
     <string name="status_loading_model">正在加载 %1$s…</string>
     <string name="status_model_loaded">%1$s 已加载 · %2$s</string>
-    <string name="status_demo_engine">演示引擎已加载</string>
     <string name="status_model_not_loaded">模型未加载 — 请点击加载图标</string>
     <string name="status_unknown_backend">未知后端</string>
 
@@ -97,4 +96,6 @@
     <string name="msg_camera_permission">扫描文字需要相机权限</string>
     <string name="cd_restart">开始新会话</string>
     <string name="action_start">开始</string>
+    <string name="model_required_title">需要翻译模型</string>
+    <string name="model_required_body">在模型下载到本机之前无法翻译。只需下载一次，之后全部离线运行。</string>
 </resources>

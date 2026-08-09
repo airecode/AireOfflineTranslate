@@ -20,7 +20,6 @@
     <string name="status_speaking">Reproduciendo… toca detener para cancelar</string>
     <string name="status_loading_model">Cargando %1$s…</string>
     <string name="status_model_loaded">%1$s cargado · %2$s</string>
-    <string name="status_demo_engine">Motor de demostración cargado</string>
     <string name="status_model_not_loaded">Modelo no cargado: toca el icono de carga</string>
     <string name="status_unknown_backend">motor desconocido</string>
 
@@ -97,4 +96,6 @@
     <string name="msg_camera_permission">Se necesita permiso de camara para escanear texto</string>
     <string name="cd_restart">Iniciar una sesion nueva</string>
     <string name="action_start">Iniciar</string>
+    <string name="model_required_title">Falta el modelo de traduccion</string>
+    <string name="model_required_body">No se puede traducir nada hasta que el modelo este en este dispositivo. Se descarga una vez y despues todo funciona sin conexion.</string>
 </resources>

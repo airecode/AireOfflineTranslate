@@ -23,7 +23,6 @@ import com.example.myapplication.translate.translator.LiteRtTranslator
 import com.example.myapplication.translate.translator.ModelDownloader
 import com.example.myapplication.translate.translator.ModelLocation
 import com.example.myapplication.translate.translator.ModelVariant
-import com.example.myapplication.translate.translator.StubTranslator
 import com.example.myapplication.translate.translator.Translator
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -56,7 +55,11 @@ data class TranslateUiState(
     val activeVariant: ModelVariant = ModelVariant.DEFAULT,
     /** Download/installed state for every variant, so the models dialog can show them all. */
     val modelStates: Map<ModelVariant, ModelDownloader.State> = emptyMap(),
-    val usingStubEngine: Boolean = false,
+    /**
+     * True while the "you need the model first" prompt is up. Raised by any action that cannot run
+     * without weights, rather than letting the action fail somewhere further down.
+     */
+    val modelRequired: Boolean = false,
     /**
      * True between tapping cancel on the load dialog and the engine actually letting go. The
      * dialog stays up for that window rather than closing optimistically, because the load is a
@@ -103,12 +106,14 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
         application.getSharedPreferences("aire_prefs", android.content.Context.MODE_PRIVATE)
 
     /**
-     * Swapped for the real engine the moment the model finishes downloading, so the first run does
-     * not need an app restart to become useful.
+     * Always the real engine, even before any weights exist: [LiteRtTranslator.prepare] reports a
+     * missing file as [EngineStatus.Unavailable] on its own. There is deliberately no fake engine
+     * to fall back on — one that answers with invented translations is worse than nothing, because
+     * the user cannot tell it apart from the real thing.
      */
-    private var translator: Translator = StubTranslator()
+    private var translator: Translator = LiteRtTranslator(application, ModelVariant.DEFAULT)
 
-    private val _state = MutableStateFlow(TranslateUiState(usingStubEngine = true))
+    private val _state = MutableStateFlow(TranslateUiState())
     val state: StateFlow<TranslateUiState> = _state.asStateFlow()
 
     private var translationJob: Job? = null
@@ -185,12 +190,9 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
         }
 
         refreshModelStates()
-        if (modelDownloader.isInstalled(startingVariant)) {
-            useRealEngine(startingVariant)
-        } else {
-            Log.i(TAG, "No weights for " + startingVariant.id + "; running on stub")
-            observeEngineStatus()
-        }
+        // Binds the engine to the chosen variant either way; useRealEngine only starts a load when
+        // the weights are actually there.
+        useRealEngine(startingVariant, force = true)
     }
 
     // ---- model lifecycle ---------------------------------------------------
@@ -383,7 +385,9 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
         downloadJobs.remove(variant)?.cancel()
         modelDownloader.delete(variant)
 
-        if (isActive) useStubEngine()
+        // Rebuilt rather than left pointing at freed weights. Not installed any more, so
+        // useRealEngine will not try to load it.
+        if (isActive) useRealEngine(variant, force = true)
         refreshModelStates()
         _state.update { it.copy(message = str(R.string.msg_model_deleted, variant.displayName)) }
     }
@@ -395,11 +399,7 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
         translationJob?.cancel()
         _state.update { it.copy(activeVariant = variant, message = null) }
 
-        if (modelDownloader.isInstalled(variant)) {
-            useRealEngine(variant, force = true)
-        } else {
-            useStubEngine()
-        }
+        useRealEngine(variant, force = true)
     }
 
     private fun refreshModelStates() {
@@ -454,17 +454,29 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
         engineStatusJob?.cancel()
         translator.close()
         translator = LiteRtTranslator(getApplication(), variant)
-        _state.update { it.copy(usingStubEngine = false) }
         observeEngineStatus()
-        beginLoad()
+        // Loading a variant with no weights would only report "model not found"; the download
+        // prompt says something the user can act on instead.
+        if (modelDownloader.isInstalled(variant)) beginLoad()
     }
 
-    private fun useStubEngine() {
-        engineStatusJob?.cancel()
-        translator.close()
-        translator = StubTranslator()
-        _state.update { it.copy(usingStubEngine = true) }
-        observeEngineStatus()
+    /**
+     * Gate for anything that cannot work without weights.
+     *
+     * Returns false and raises the download prompt rather than letting the action start and fail
+     * partway through, which is what makes a missing model look like a broken app.
+     */
+    private fun modelReady(): Boolean {
+        if (modelDownloader.isInstalled(_state.value.activeVariant)) return true
+        _state.update { it.copy(modelRequired = true) }
+        return false
+    }
+
+    /** For the camera, which the Activity opens rather than this. */
+    fun canStartModelAction(): Boolean = modelReady()
+
+    fun onDismissModelRequired() {
+        _state.update { it.copy(modelRequired = false) }
     }
 
     private fun observeEngineStatus() {
@@ -533,6 +545,7 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
 
     private fun startRecording(side: Side) {
         if (_state.value.isBusy) return
+        if (!modelReady()) return
 
         speaker.stop()
         translationJob?.cancel()
@@ -726,6 +739,7 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
      */
     private fun startImageRun(load: suspend () -> ByteArray?) {
         if (_state.value.isBusy) return
+        if (!modelReady()) return
 
         translationJob?.cancel()
         translationJob = viewModelScope.launch {
@@ -840,6 +854,7 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
         if (_state.value.isBusy) return
         val trimmed = text.trim()
         if (trimmed.isEmpty()) return
+        if (!modelReady()) return
 
         translationJob?.cancel()
         translationJob = viewModelScope.launch {

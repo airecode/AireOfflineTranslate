@@ -25,7 +25,6 @@
     <string name="status_speaking">Speaking… tap stop to cancel</string>
     <string name="status_loading_model">Loading %1$s…</string>
     <string name="status_model_loaded">%1$s loaded · %2$s</string>
-    <string name="status_demo_engine">Demo engine loaded</string>
     <string name="status_model_not_loaded">Model not loaded — tap the load icon</string>
     <string name="status_unknown_backend">unknown backend</string>
 
@@ -107,4 +106,6 @@
     <string name="msg_camera_permission">Camera permission is required to scan text</string>
     <string name="cd_restart">Start a new session</string>
     <string name="action_start">Start</string>
+    <string name="model_required_title">Translation model needed</string>
+    <string name="model_required_body">Nothing can be translated until the model is on this device. It downloads once, then every translation runs offline.</string>
 </resources>

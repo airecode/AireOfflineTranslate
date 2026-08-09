@@ -14,8 +14,8 @@ android {
         applicationId = "com.aire.translate"
         minSdk = 33
         targetSdk = 37
-        versionCode = 40
-        versionName = "4.9-camera-start"
+        versionCode = 41
+        versionName = "5.0-no-demo"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

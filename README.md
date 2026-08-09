@@ -68,6 +68,11 @@ first that can actually execute a kernel:
 **Pixel devices have no OpenCL driver**, so the GPU backend fails there with "Can not find OpenCL
 library on this device" — hence the Tensor-specific path being tried first on that hardware.
 
+There is no demo or fallback engine. Until the weights are downloaded, anything that would need
+them — speaking, typing, the camera, the gallery — raises a prompt offering the download instead of
+starting. An engine that answers with invented translations is indistinguishable from a working one
+to whoever is reading the screen, which makes it worse than none at all.
+
 The model loads by itself: at launch when the weights are already on the device, and as soon as a
 first download finishes. It is released again after five minutes in the background, when Android
 reports real memory pressure, or when you tap unload. Holding ~2.6 GB makes this process the most
@@ -223,7 +228,6 @@ app/src/main/java/com/example/myapplication/
     ├── translator/
     │   ├── Translator.kt            Interface + prompts
     │   ├── LiteRtTranslator.kt      Gemma via LiteRT-LM, backend fallback
-    │   ├── StubTranslator.kt        Fake engine mimicking real timings
     │   ├── ModelVariant.kt          Model catalogue and download sources
     │   ├── ModelLocation.kt         On-disk paths
     │   └── ModelDownloader.kt       Download, source switching, delete
@@ -231,8 +235,8 @@ app/src/main/java/com/example/myapplication/
 ```
 
 The `Translator` interface is the seam. Everything above it — UI, state machine, speech — is
-independent of how translation happens, which is what lets the app run against `StubTranslator`
-with no model present.
+independent of how translation happens, which is where another engine would slot in. It has one
+implementation and deliberately no fake one.
 
 ---
 

@@ -280,18 +280,13 @@ private fun StatusStrip(state: TranslateUiState, micPermissionGranted: Boolean) 
         engineStatus is EngineStatus.Loading ->
             stringResource(R.string.status_loading_model, state.activeVariant.displayName)
         engineStatus is EngineStatus.Unavailable -> engineStatus.reason
-        engineStatus is EngineStatus.Ready ->
-            if (state.usingStubEngine) {
-                stringResource(R.string.status_demo_engine)
-            } else {
-                // Names the variant, not just the backend: with two models installed, "loaded"
-                // alone does not tell you which one you are actually translating with.
-                stringResource(
-                    R.string.status_model_loaded,
-                    state.activeVariant.displayName,
-                    engineStatus.backend ?: stringResource(R.string.status_unknown_backend),
-                )
-            }
+        // Names the variant, not just the backend: "loaded" alone does not say which model is
+        // actually doing the translating.
+        engineStatus is EngineStatus.Ready -> stringResource(
+            R.string.status_model_loaded,
+            state.activeVariant.displayName,
+            engineStatus.backend ?: stringResource(R.string.status_unknown_backend),
+        )
         // Loading is manual now, so an unloaded engine has to be visible — otherwise the first
         // recording fails with no hint as to why.
         else -> stringResource(R.string.status_model_not_loaded)
