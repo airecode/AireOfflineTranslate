@@ -100,10 +100,11 @@
     <string name="progress_dialog_title">Translating…</string>
     <string name="progress_dialog_body">This runs entirely on your device, so it takes a few seconds.</string>
     <string name="cd_camera">Scan text with the camera</string>
-    <string name="camera_hint_aim">Put the text inside the box. It captures by itself.</string>
+    <string name="camera_hint_aim">Frame the text, then tap Start.</string>
     <string name="camera_hint_hold">Hold steady…</string>
     <string name="camera_hint_capturing">Capturing…</string>
     <string name="msg_camera_unavailable">Camera unavailable</string>
     <string name="msg_camera_permission">Camera permission is required to scan text</string>
     <string name="cd_restart">Start a new session</string>
+    <string name="action_start">Start</string>
 </resources>

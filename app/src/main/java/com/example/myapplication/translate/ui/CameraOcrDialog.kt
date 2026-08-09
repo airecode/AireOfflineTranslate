@@ -13,7 +13,9 @@ import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -63,12 +65,16 @@ private val DEFAULT_CROP = Rect(left = 0.08f, top = 0.36f, right = 0.92f, bottom
 private fun Rect.toRectF() = RectF(left, top, right, bottom)
 
 /**
- * Full-screen camera that reads text without a shutter button.
+ * Full-screen camera that reads the text inside a selection box.
  *
- * There is nothing to press. The preview runs, a [SceneStabilityDetector] watches for the user to
- * stop moving, and the still is taken at that moment. That is the only workable reading of "live"
- * OCR on-device: a vision encode plus a translation takes seconds, so the app cannot read every
- * frame — it has to choose one, and the moment the user stops moving is when they have aimed.
+ * Nothing is captured until Start is tapped. Firing on stability alone, as this first did, took the
+ * frame roughly a second after the camera opened — before the user had any chance to place the box
+ * over the text they actually wanted.
+ *
+ * Start arms the capture rather than taking it outright: [SceneStabilityDetector] then waits for the
+ * scene to settle, which absorbs the wobble of the tap itself and is why the detector exists. The
+ * app still reads one frame rather than every frame, because a vision encode plus a translation
+ * takes seconds — it just no longer guesses at which moment the user meant.
  *
  * Capture hands the raw JPEG and its rotation straight out through [onCapture] without decoding
  * anything. Normalising the frame is several megabytes of bitmap work, and the caller already has a
@@ -95,11 +101,15 @@ fun CameraOcrDialog(
      */
     val captureStarted = remember { AtomicBoolean(false) }
 
+    /** Set by Start. Read on the analyzer thread, hence the atomic rather than the UI flag. */
+    val armedFlag = remember { AtomicBoolean(false) }
+
     // Held as state rather than a delegate so the capture path can read the current value at
     // the moment it fires, rather than whatever it was when the analyzer was set up.
     val cropState = remember { mutableStateOf(DEFAULT_CROP) }
 
     var reading by remember { mutableStateOf(SceneStabilityDetector.Reading.MOVING) }
+    var armed by remember { mutableStateOf(false) }
     var capturing by remember { mutableStateOf(false) }
     var failed by remember { mutableStateOf(false) }
 
@@ -150,7 +160,8 @@ fun CameraOcrDialog(
 
                     mainExecutor.execute { reading = result }
 
-                    if (result == SceneStabilityDetector.Reading.STABLE &&
+                    if (armedFlag.get() &&
+                        result == SceneStabilityDetector.Reading.STABLE &&
                         captureStarted.compareAndSet(false, true)
                     ) {
                         // Hopped to the main thread first so the crop rectangle is read from
@@ -228,8 +239,9 @@ fun CameraOcrDialog(
                         when {
                             failed -> R.string.msg_camera_unavailable
                             capturing -> R.string.camera_hint_capturing
-                            reading == SceneStabilityDetector.Reading.SETTLING ->
-                                R.string.camera_hint_hold
+                            // Once armed the reading no longer matters to the user: either way the
+                            // thing to do is keep the phone still until it fires.
+                            armed -> R.string.camera_hint_hold
                             else -> R.string.camera_hint_aim
                         }
                     ),
@@ -250,12 +262,13 @@ fun CameraOcrDialog(
                 }
             }
 
-            Box(
+            Row(
                 Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
                     .padding(bottom = 40.dp),
-                contentAlignment = Alignment.Center,
+                horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Button(
                     onClick = onDismiss,
@@ -266,6 +279,26 @@ fun CameraOcrDialog(
                     ),
                 ) {
                     Text(stringResource(R.string.action_cancel))
+                }
+
+                Button(
+                    onClick = {
+                        armed = true
+                        armedFlag.set(true)
+                        // Restarts the settle grace, so the shake from this very tap is not what
+                        // the capture is taken through.
+                        detector.reset()
+                    },
+                    enabled = !armed && !failed,
+                    shape = RoundedCornerShape(28.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        contentColor = Color.Black,
+                        disabledContainerColor = Color.White.copy(alpha = 0.3f),
+                        disabledContentColor = Color.Black.copy(alpha = 0.5f),
+                    ),
+                ) {
+                    Text(stringResource(R.string.action_start))
                 }
             }
         }

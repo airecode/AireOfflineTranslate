@@ -90,10 +90,11 @@
     <string name="progress_dialog_title">正在翻译…</string>
     <string name="progress_dialog_body">全部在您的设备上处理，因此需要几秒钟。</string>
     <string name="cd_camera">用相机扫描</string>
-    <string name="camera_hint_aim">将文字放入框内，会自动拍摄。</string>
+    <string name="camera_hint_aim">将文字放入框内，然后点按“开始”。</string>
     <string name="camera_hint_hold">请保持稳定…</string>
     <string name="camera_hint_capturing">正在拍摄…</string>
     <string name="msg_camera_unavailable">相机不可用</string>
     <string name="msg_camera_permission">扫描文字需要相机权限</string>
     <string name="cd_restart">开始新会话</string>
+    <string name="action_start">开始</string>
 </resources>

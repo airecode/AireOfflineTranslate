@@ -90,10 +90,11 @@
     <string name="progress_dialog_title">Traduciendo…</string>
     <string name="progress_dialog_body">Todo se procesa en tu dispositivo, por eso tarda unos segundos.</string>
     <string name="cd_camera">Escanear con la camara</string>
-    <string name="camera_hint_aim">Coloca el texto dentro del recuadro. Se captura solo.</string>
+    <string name="camera_hint_aim">Encuadra el texto y pulsa Iniciar.</string>
     <string name="camera_hint_hold">Manten el pulso firme…</string>
     <string name="camera_hint_capturing">Capturando…</string>
     <string name="msg_camera_unavailable">Camara no disponible</string>
     <string name="msg_camera_permission">Se necesita permiso de camara para escanear texto</string>
     <string name="cd_restart">Iniciar una sesion nueva</string>
+    <string name="action_start">Iniciar</string>
 </resources>

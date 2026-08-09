@@ -90,10 +90,11 @@
     <string name="progress_dialog_title">翻訳中…</string>
     <string name="progress_dialog_body">すべて端末内で処理するため、数秒かかります。</string>
     <string name="cd_camera">カメラで読み取る</string>
-    <string name="camera_hint_aim">枠の中に文字を入れてください。自動で撮影します。</string>
+    <string name="camera_hint_aim">枠に文字を合わせて「開始」をタップしてください。</string>
     <string name="camera_hint_hold">そのまま静止してください…</string>
     <string name="camera_hint_capturing">撮影中…</string>
     <string name="msg_camera_unavailable">カメラを利用できません</string>
     <string name="msg_camera_permission">文字を読み取るにはカメラの権限が必要です</string>
     <string name="cd_restart">新しいセッションを開始</string>
+    <string name="action_start">開始</string>
 </resources>

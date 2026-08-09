@@ -16,11 +16,11 @@ table. Each half shows its own language and has its own microphone, replay and c
 - **Speak** — tap the microphone, speak, tap stop. The transcript appears on the speaker's half,
   the translation on the listener's, and is read aloud in the listener's language.
 - **Type** — a keyboard button on the lower half for text input.
-- **Camera** — point it at a sign or a menu. There is no shutter button: the app watches for you
-  to stop moving and takes the frame itself. It reads one frame per opening rather than
-  continuously, because a vision encode plus a translation takes seconds — so it picks the moment
-  you have aimed instead of pretending to read video. Drag the box, or its corners, to choose which
-  text to read; only what is inside it reaches the model.
+- **Camera** — point it at a sign or a menu, drag the box (or its corners) over the text you want,
+  then tap Start. Only what is inside the box reaches the model. Start arms the shot rather than
+  taking it outright: the app waits for the phone to settle first, which absorbs the wobble of the
+  tap itself. It reads one frame rather than continuously, because a vision encode plus a
+  translation takes seconds.
 - **Photo** — pick an image from the gallery instead. Both routes use the model's own vision
   encoder, so every script the model knows is covered.
 - **Replay / copy** — per half, so either person can hear a line again or copy it. Copy is a

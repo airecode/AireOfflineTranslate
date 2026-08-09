@@ -90,10 +90,11 @@
     <string name="progress_dialog_title">جارٍ الترجمة…</string>
     <string name="progress_dialog_body">تجري العملية بالكامل على جهازك، لذا تستغرق بضع ثوانٍ.</string>
     <string name="cd_camera">المسح بالكاميرا</string>
-    <string name="camera_hint_aim">ضع النص داخل الإطار، وسيتم التصوير تلقائيًا.</string>
+    <string name="camera_hint_aim">حدّد النص داخل الإطار، ثم اضغط ابدأ.</string>
     <string name="camera_hint_hold">حافظ على ثبات الكاميرا…</string>
     <string name="camera_hint_capturing">جارٍ التصوير…</string>
     <string name="msg_camera_unavailable">الكاميرا غير متوفرة</string>
     <string name="msg_camera_permission">إذن الكاميرا مطلوب لمسح النص</string>
     <string name="cd_restart">بدء جلسة جديدة</string>
+    <string name="action_start">ابدأ</string>
 </resources>
