@@ -98,4 +98,5 @@
     <string name="action_start">開始</string>
     <string name="model_required_title">翻訳モデルが必要です</string>
     <string name="model_required_body">モデルを端末にダウンロードするまで翻訳できません。ダウンロードは一度だけで、その後はすべてオフラインで動作します。</string>
+    <string name="models_download_failed">ダウンロードに失敗しました — %1$s</string>
 </resources>

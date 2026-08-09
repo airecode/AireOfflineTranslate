@@ -235,9 +235,12 @@ private fun ModelRow(
         }
 
         is ModelDownloader.State.Failed -> {
+            // Labelled, because the reasons read as standalone sentences — "Storage unavailable"
+            // on its own does not say that the download is what stopped.
             Text(
-                text = state.reason,
+                text = stringResource(R.string.models_download_failed, state.reason),
                 fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.error,
             )
             TextButton(onClick = onDownload) {

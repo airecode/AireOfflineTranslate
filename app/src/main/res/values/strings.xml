@@ -108,4 +108,5 @@
     <string name="action_start">Start</string>
     <string name="model_required_title">Translation model needed</string>
     <string name="model_required_body">Nothing can be translated until the model is on this device. It downloads once, then every translation runs offline.</string>
+    <string name="models_download_failed">Download failed — %1$s</string>
 </resources>

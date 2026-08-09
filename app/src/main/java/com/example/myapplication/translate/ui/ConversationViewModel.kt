@@ -61,6 +61,11 @@ data class TranslateUiState(
      */
     val modelRequired: Boolean = false,
     /**
+     * Whether the model manager is open. Held here rather than in the Activity so the download
+     * finishing can close it: that transition is only visible from where the download is observed.
+     */
+    val showModelManager: Boolean = false,
+    /**
      * True between tapping cancel on the load dialog and the engine actually letting go. The
      * dialog stays up for that window rather than closing optimistically, because the load is a
      * blocking native call and pretending it stopped would leave the app looking idle while it is
@@ -424,6 +429,12 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
                     it.copy(modelStates = it.modelStates + (variant to downloadState))
                 }
                 if (downloadState is ModelDownloader.State.Installed) {
+                    // Both model dialogs have served their purpose the moment the weights land.
+                    // Leaving them up means the user has to dismiss a screen offering a download
+                    // they have already finished. A failure deliberately does not do this: that is
+                    // exactly when the dialog needs to stay and say why.
+                    _state.update { it.copy(modelRequired = false, showModelManager = false) }
+
                     val active = _state.value.activeVariant
                     when {
                         variant == active -> useRealEngine(variant, force = true)
@@ -477,6 +488,14 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
 
     fun onDismissModelRequired() {
         _state.update { it.copy(modelRequired = false) }
+    }
+
+    fun onManageModels() {
+        _state.update { it.copy(showModelManager = true) }
+    }
+
+    fun onDismissModelManager() {
+        _state.update { it.copy(showModelManager = false) }
     }
 
     private fun observeEngineStatus() {

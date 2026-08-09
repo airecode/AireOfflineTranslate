@@ -98,4 +98,5 @@
     <string name="action_start">开始</string>
     <string name="model_required_title">需要翻译模型</string>
     <string name="model_required_body">在模型下载到本机之前无法翻译。只需下载一次，之后全部离线运行。</string>
+    <string name="models_download_failed">下载失败 — %1$s</string>
 </resources>

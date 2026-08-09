@@ -68,6 +68,9 @@ first that can actually execute a kernel:
 **Pixel devices have no OpenCL driver**, so the GPU backend fails there with "Can not find OpenCL
 library on this device" — hence the Tensor-specific path being tried first on that hardware.
 
+The download dialog closes itself the moment the weights land, and stays open with the reason and a
+retry when a download fails.
+
 There is no demo or fallback engine. Until the weights are downloaded, anything that would need
 them — speaking, typing, the camera, the gallery — raises a prompt offering the download instead of
 starting. An engine that answers with invented translations is indistinguishable from a working one

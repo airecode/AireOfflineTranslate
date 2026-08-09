@@ -177,8 +177,7 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
-                var showModels by remember { mutableStateOf(false) }
-                if (showModels) {
+                if (state.showModelManager) {
                     ModelsDialog(
                         activeVariant = state.activeVariant,
                         states = state.modelStates,
@@ -186,7 +185,7 @@ class MainActivity : ComponentActivity() {
                         onDownload = viewModel::onDownloadModel,
                         onCancelDownload = viewModel::onCancelDownload,
                         onDelete = viewModel::onDeleteModel,
-                        onDismiss = { showModels = false },
+                        onDismiss = viewModel::onDismissModelManager,
                     )
                 }
 
@@ -226,7 +225,7 @@ class MainActivity : ComponentActivity() {
                     // hand-off, so the idle-unload countdown must not start.
                     onScanCamera = { scanWithCamera() },
                     onRestartSession = viewModel::onRestartSession,
-                    onManageModels = { showModels = true },
+                    onManageModels = viewModel::onManageModels,
                     onLoadModel = viewModel::onLoadModel,
                     onUnloadModel = viewModel::onUnloadModel,
                 )

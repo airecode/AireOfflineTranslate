@@ -98,4 +98,5 @@
     <string name="action_start">Iniciar</string>
     <string name="model_required_title">Falta el modelo de traduccion</string>
     <string name="model_required_body">No se puede traducir nada hasta que el modelo este en este dispositivo. Se descarga una vez y despues todo funciona sin conexion.</string>
+    <string name="models_download_failed">Error de descarga — %1$s</string>
 </resources>
