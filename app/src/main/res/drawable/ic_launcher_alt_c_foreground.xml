@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Option C — "Exchange".
+  Two arrows chasing each other round a circle, with a dot on each side standing for the two
+  speakers. Wordless and scriptless, so it favours no language — which suits an app whose whole
+  point is that neither person's language is the default. The most abstract of the three, and the
+  one that stays legible smallest.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Upper arc, sweeping left to right. -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="8"
+        android:strokeLineCap="round"
+        android:pathData="M27,46 A27,27 0 0 1 74,34" />
+    <!-- Its arrowhead, at the right end. -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M78,44 L64,38 L79,29 Z" />
+
+    <!-- Lower arc, the same turned 180°. -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="8"
+        android:strokeLineCap="round"
+        android:pathData="M81,62 A27,27 0 0 1 34,74" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M30,64 L44,70 L29,79 Z" />
+
+    <!-- The two speakers. -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,44 m-6,0 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,64 m-6,0 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0" />
+</vector>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Option B — "On device".
+  A speech bubble wearing processor legs: the translation happens on the chip in your hand, which is
+  the one thing this app has that the obvious alternatives do not. Reads as a chip at a glance and
+  as a bubble on a second look.
+
+  Legs reach x=24 and x=84, and the lowest pair sits at y=62..67, which puts the furthest corner
+  about 33 from centre — the edge of the adaptive-icon safe zone and no further.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Processor legs, drawn first so the body covers their inner ends. -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M24,42 h10 v5 h-10 z M24,52 h10 v5 h-10 z M24,62 h10 v5 h-10 z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M74,42 h10 v5 h-10 z M74,52 h10 v5 h-10 z M74,62 h10 v5 h-10 z" />
+
+    <!-- Tail, so it is unmistakably speech and not just silicon. -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M38,68 L52,68 L38,80 Z" />
+
+    <!-- Body, square enough to read as a chip package. -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M34,32 H74 A8,8 0 0 1 82,40 V64 A8,8 0 0 1 74,72 H34 A8,8 0 0 1 26,64 V40 A8,8 0 0 1 34,32 Z" />
+
+    <!-- Two lines knocked out of the body: the two sides of the conversation. -->
+    <path
+        android:fillColor="#4A2E8C"
+        android:pathData="M36,44 h36 v6 h-36 z" />
+    <path
+        android:fillColor="#4A2E8C"
+        android:pathData="M36,56 h22 v6 h-22 z" />
+</vector>

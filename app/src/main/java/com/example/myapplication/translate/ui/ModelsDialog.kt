@@ -194,10 +194,10 @@ private fun ModelRow(
                 fontSize = 15.sp,
                 color = MaterialTheme.colorScheme.onSurface,
             )
+            // Size only. The note that used to sit here compared this build against the other
+            // one, and there is no other one.
             Text(
-                text = when (variant) {
-                    ModelVariant.E2B -> stringResource(R.string.models_e2b_note, variant.sizeGb)
-                },
+                text = variant.sizeGb,
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

@@ -79,7 +79,6 @@
     <string name="notif_downloading_model">正在下载翻译模型</string>
     <string name="models_title">翻译模型</string>
     <string name="models_body">完全在您的设备上运行。下载仅使用 Wi-Fi。</string>
-    <string name="models_e2b_note">%1$s · 更小更快，适合内存较小的设备</string>
     <string name="msg_model_deleted">已删除 %1$s</string>
     <string name="cd_models">翻译模型</string>
     <string name="msg_stale_model_removed">已删除 %1$s 不受支持的模型文件</string>

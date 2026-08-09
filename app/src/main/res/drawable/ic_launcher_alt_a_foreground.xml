@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Option A — "One conversation, two sides".
+  A single speech bubble cut by the same horizontal seam the conversation screen is built around,
+  the upper half held back so the two sides read as distinct without becoming two separate shapes.
+  Simplest of the three and the least likely to turn to mush at 24dp.
+
+  Everything sits inside a radius of ~31 from centre, comfortably within the 66dp adaptive-icon
+  safe zone, so no launcher mask clips it.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Tail first, so the body's rounded corner sits over its root. -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.72"
+        android:pathData="M38,64 L54,64 L38,80 Z" />
+
+    <!-- Far half: the person across the table. -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.72"
+        android:pathData="M32,32 H76 A8,8 0 0 1 84,40 V50 H24 V40 A8,8 0 0 1 32,32 Z" />
+
+    <!-- Near half. -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M24,54 H84 V60 A8,8 0 0 1 76,68 H32 A8,8 0 0 1 24,60 V54 Z" />
+</vector>

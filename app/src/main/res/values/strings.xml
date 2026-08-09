@@ -89,7 +89,6 @@
     <string name="notif_downloading_model">Downloading translation model</string>
     <string name="models_title">Translation model</string>
     <string name="models_body">Runs entirely on your device. Downloads use Wi-Fi only.</string>
-    <string name="models_e2b_note">%1$s · smaller and faster, for devices with less memory</string>
     <string name="msg_model_deleted">%1$s deleted</string>
     <string name="cd_models">Translation model</string>
     <string name="msg_stale_model_removed">Removed %1$s of unsupported model files</string>

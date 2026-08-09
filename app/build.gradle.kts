@@ -14,8 +14,8 @@ android {
         applicationId = "com.aire.translate"
         minSdk = 33
         targetSdk = 37
-        versionCode = 42
-        versionName = "5.1-download-feedback"
+        versionCode = 43
+        versionName = "5.2-size-only"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

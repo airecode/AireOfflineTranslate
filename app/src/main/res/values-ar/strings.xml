@@ -79,7 +79,6 @@
     <string name="notif_downloading_model">جارٍ تنزيل نموذج الترجمة</string>
     <string name="models_title">نموذج الترجمة</string>
     <string name="models_body">يعمل بالكامل على جهازك. التنزيل عبر Wi‑Fi فقط.</string>
-    <string name="models_e2b_note">%1$s · أصغر وأسرع، للأجهزة ذات الذاكرة الأقل</string>
     <string name="msg_model_deleted">تم حذف %1$s</string>
     <string name="cd_models">نموذج الترجمة</string>
     <string name="msg_stale_model_removed">تمت إزالة %1$s من ملفات النماذج غير المدعومة</string>
