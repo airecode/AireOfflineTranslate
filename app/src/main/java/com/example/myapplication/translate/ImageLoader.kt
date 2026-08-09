@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.graphics.RectF
 import android.media.ExifInterface
 import android.net.Uri
 import android.util.Log
@@ -80,7 +81,7 @@ object ImageLoader {
      * CameraX records orientation in metadata rather than turning the pixels, and the vision
      * encoder only ever sees pixels. Text captured sideways is text the model does not read.
      */
-    fun decodeCapturedJpeg(jpeg: ByteArray, rotationDegrees: Int): ByteArray? {
+    fun decodeCapturedJpeg(jpeg: ByteArray, rotationDegrees: Int, crop: RectF? = null): ByteArray? {
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         BitmapFactory.decodeByteArray(jpeg, 0, jpeg.size, bounds)
         if (bounds.outWidth <= 0 || bounds.outHeight <= 0) {
@@ -88,8 +89,20 @@ object ImageLoader {
             return null
         }
 
+        // Sized against what survives the crop, not the whole frame. Sampling for the full image
+        // first would throw away most of the detail in a small selection before it was ever read —
+        // a band across the middle of a sign is exactly where the text needs to stay legible.
+        //
+        // The crop's axes are the upright ones, which a quarter turn swaps relative to the sensor,
+        // so the dimensions have to be matched up before they are multiplied.
+        val quarterTurned = rotationDegrees % 180 != 0
+        val uprightWidth = if (quarterTurned) bounds.outHeight else bounds.outWidth
+        val uprightHeight = if (quarterTurned) bounds.outWidth else bounds.outHeight
+
+        val keptWidth = uprightWidth * (crop?.width() ?: 1f)
+        val keptHeight = uprightHeight * (crop?.height() ?: 1f)
         var sample = 1
-        while (max(bounds.outWidth, bounds.outHeight) / sample > MAX_DIMENSION) sample *= 2
+        while (max(keptWidth, keptHeight) / sample > MAX_DIMENSION) sample *= 2
 
         val decoded = try {
             BitmapFactory.decodeByteArray(
@@ -101,18 +114,38 @@ object ImageLoader {
             null
         } ?: return null
 
+        // Rotate before cropping: the rectangle was drawn on an upright preview, so its
+        // coordinates only mean anything once the pixels are upright too.
         val upright = rotate(decoded, rotationDegrees.toFloat())
+        val selected = if (crop == null) upright else cropTo(upright, crop)
+
         return try {
             ByteArrayOutputStream().use { out ->
-                upright.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, out)
+                selected.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, out)
                 out.toByteArray()
             }
         } catch (t: Throwable) {
             Log.e(TAG, "Could not encode captured frame", t)
             null
         } finally {
-            if (upright !== decoded) decoded.recycle()
-            upright.recycle()
+            if (selected !== upright) selected.recycle()
+            if (upright !== decoded) upright.recycle()
+            decoded.recycle()
+        }
+    }
+
+    /** Cuts out the normalised [crop], clamped so a degenerate rectangle cannot produce no pixels. */
+    private fun cropTo(bitmap: Bitmap, crop: RectF): Bitmap {
+        val left = (crop.left * bitmap.width).toInt().coerceIn(0, bitmap.width - 1)
+        val top = (crop.top * bitmap.height).toInt().coerceIn(0, bitmap.height - 1)
+        val right = (crop.right * bitmap.width).toInt().coerceIn(left + 1, bitmap.width)
+        val bottom = (crop.bottom * bitmap.height).toInt().coerceIn(top + 1, bitmap.height)
+
+        return try {
+            Bitmap.createBitmap(bitmap, left, top, right - left, bottom - top)
+        } catch (t: Throwable) {
+            Log.w(TAG, "Crop failed; using the whole frame", t)
+            bitmap
         }
     }
 

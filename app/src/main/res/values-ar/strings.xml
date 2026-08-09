@@ -87,10 +87,10 @@
     <string name="msg_load_cancelled">تم إلغاء تحميل النموذج</string>
     <string name="loading_dialog_body">يستغرق ذلك بضع ثوانٍ، ويجب أن يكتمل قبل الترجمة.</string>
     <string name="loading_dialog_cancelling">جارٍ الإلغاء…</string>
-    <string name="progress_dialog_title">جارٍ النسخ والترجمة…</string>
+    <string name="progress_dialog_title">جارٍ الترجمة…</string>
     <string name="progress_dialog_body">تجري العملية بالكامل على جهازك، لذا تستغرق بضع ثوانٍ.</string>
     <string name="cd_camera">المسح بالكاميرا</string>
-    <string name="camera_hint_aim">وجّه الكاميرا نحو النص، وسيتم التصوير تلقائيًا.</string>
+    <string name="camera_hint_aim">ضع النص داخل الإطار، وسيتم التصوير تلقائيًا.</string>
     <string name="camera_hint_hold">حافظ على ثبات الكاميرا…</string>
     <string name="camera_hint_capturing">جارٍ التصوير…</string>
     <string name="msg_camera_unavailable">الكاميرا غير متوفرة</string>

@@ -19,7 +19,8 @@ table. Each half shows its own language and has its own microphone, replay and c
 - **Camera** — point it at a sign or a menu. There is no shutter button: the app watches for you
   to stop moving and takes the frame itself. It reads one frame per opening rather than
   continuously, because a vision encode plus a translation takes seconds — so it picks the moment
-  you have aimed instead of pretending to read video.
+  you have aimed instead of pretending to read video. Drag the box, or its corners, to choose which
+  text to read; only what is inside it reaches the model.
 - **Photo** — pick an image from the gallery instead. Both routes use the model's own vision
   encoder, so every script the model knows is covered.
 - **Replay / copy** — per half, so either person can hear a line again or copy it. Copy is a
@@ -66,6 +67,12 @@ first that can actually execute a kernel:
 
 **Pixel devices have no OpenCL driver**, so the GPU backend fails there with "Can not find OpenCL
 library on this device" — hence the Tensor-specific path being tried first on that hardware.
+
+The model loads by itself: at launch when the weights are already on the device, and as soon as a
+first download finishes. It is released again after five minutes in the background, when Android
+reports real memory pressure, or when you tap unload. Holding ~2.6 GB makes this process the most
+attractive thing on the phone to kill, so giving it back on request is what keeps the app — and the
+conversation on screen — alive.
 
 Loading is validated by running a real one-token generation, not just `initialize()`, because
 LiteRT-LM defers kernel compilation and a backend that cannot run will still initialise cleanly.

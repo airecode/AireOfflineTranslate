@@ -1,5 +1,6 @@
 package com.example.myapplication.translate.ui
 
+import android.graphics.RectF
 import android.util.Log
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
@@ -7,10 +8,13 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
+import androidx.camera.core.resolutionselector.AspectRatioStrategy
+import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -49,6 +54,14 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 private const val TAG = "CameraOcr"
 
+/** Width over height of the on-screen preview: a 16:9 frame stood on end. */
+private const val FRAME_ASPECT = 9f / 16f
+
+/** A wide, shallow band across the middle — the shape a line of text on a sign tends to occupy. */
+private val DEFAULT_CROP = Rect(left = 0.08f, top = 0.36f, right = 0.92f, bottom = 0.64f)
+
+private fun Rect.toRectF() = RectF(left, top, right, bottom)
+
 /**
  * Full-screen camera that reads text without a shutter button.
  *
@@ -66,7 +79,7 @@ private const val TAG = "CameraOcr"
  */
 @Composable
 fun CameraOcrDialog(
-    onCapture: (jpeg: ByteArray, rotationDegrees: Int) -> Unit,
+    onCapture: (jpeg: ByteArray, rotationDegrees: Int, crop: RectF) -> Unit,
     onDismiss: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -81,6 +94,10 @@ fun CameraOcrDialog(
      * frame after the first, and those frames arrive on the analyzer thread, not the main one.
      */
     val captureStarted = remember { AtomicBoolean(false) }
+
+    // Held as state rather than a delegate so the capture path can read the current value at
+    // the moment it fires, rather than whatever it was when the analyzer was set up.
+    val cropState = remember { mutableStateOf(DEFAULT_CROP) }
 
     var reading by remember { mutableStateOf(SceneStabilityDetector.Reading.MOVING) }
     var capturing by remember { mutableStateOf(false) }
@@ -99,10 +116,20 @@ fun CameraOcrDialog(
             return@LaunchedEffect
         }
 
-        val preview = Preview.Builder().build()
+        // Preview and capture are pinned to the same aspect ratio, and the preview is laid out at
+        // exactly that ratio below, so what is on screen is the whole captured frame and nothing
+        // else. That is the entire basis for the crop rectangle's normalised coordinates meaning
+        // the same thing in both — left to their own devices CameraX will happily give the preview
+        // 16:9 and the still 4:3, and the box would then select the wrong part of the image.
+        val ratio = ResolutionSelector.Builder()
+            .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
+            .build()
+
+        val preview = Preview.Builder().setResolutionSelector(ratio).build()
             .also { it.setSurfaceProvider(previewView.surfaceProvider) }
 
         val capture = ImageCapture.Builder()
+            .setResolutionSelector(ratio)
             // The frame wanted is the one the user was looking at when they held still, so latency
             // matters more than the last of the image quality.
             .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
@@ -126,13 +153,18 @@ fun CameraOcrDialog(
                     if (result == SceneStabilityDetector.Reading.STABLE &&
                         captureStarted.compareAndSet(false, true)
                     ) {
-                        mainExecutor.execute { capturing = true }
-                        takeStill(
-                            capture = capture,
-                            callbackExecutor = mainExecutor,
-                            onCapture = onCapture,
-                            onFailed = { failed = true },
-                        )
+                        // Hopped to the main thread first so the crop rectangle is read from
+                        // the same thread that edits it.
+                        mainExecutor.execute {
+                            capturing = true
+                            takeStill(
+                                capture = capture,
+                                callbackExecutor = mainExecutor,
+                                crop = cropState.value.toRectF(),
+                                onCapture = onCapture,
+                                onFailed = { failed = true },
+                            )
+                        }
                     }
                 }
             }
@@ -165,7 +197,22 @@ fun CameraOcrDialog(
                 .fillMaxSize()
                 .background(Color.Black)
         ) {
-            AndroidView(factory = { previewView }, modifier = Modifier.fillMaxSize())
+            // The activity is locked to portrait, so a 16:9 frame is always 9:16 on screen.
+            // Sizing the preview to exactly that leaves the overlay's coordinates equal to the
+            // image's, with no letterbox arithmetic in between.
+            Box(
+                Modifier
+                    .align(Alignment.Center)
+                    .fillMaxSize()
+                    .aspectRatio(FRAME_ASPECT)
+            ) {
+                AndroidView(factory = { previewView }, modifier = Modifier.fillMaxSize())
+                CropOverlay(
+                    crop = cropState.value,
+                    onCropChange = { cropState.value = it },
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
 
             // Scrimmed, so the hint stays readable over a bright scene.
             Column(
@@ -234,7 +281,8 @@ fun CameraOcrDialog(
 private fun takeStill(
     capture: ImageCapture,
     callbackExecutor: java.util.concurrent.Executor,
-    onCapture: (ByteArray, Int) -> Unit,
+    crop: RectF,
+    onCapture: (ByteArray, Int, RectF) -> Unit,
     onFailed: () -> Unit,
 ) {
     capture.takePicture(
@@ -246,7 +294,8 @@ private fun takeStill(
                     val buffer = proxy.planes[0].buffer
                     ByteArray(buffer.remaining()).also(buffer::get)
                 }
-                onCapture(bytes, rotation)
+                Log.i(TAG, "Captured ${image.width}x${image.height}, rotation $rotation, crop $crop")
+                onCapture(bytes, rotation, crop)
             }
 
             override fun onError(exception: ImageCaptureException) {

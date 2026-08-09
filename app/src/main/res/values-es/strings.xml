@@ -87,10 +87,10 @@
     <string name="msg_load_cancelled">Carga del modelo cancelada</string>
     <string name="loading_dialog_body">Tarda unos segundos y debe terminar antes de traducir.</string>
     <string name="loading_dialog_cancelling">Cancelando…</string>
-    <string name="progress_dialog_title">Transcribiendo y traduciendo…</string>
+    <string name="progress_dialog_title">Traduciendo…</string>
     <string name="progress_dialog_body">Todo se procesa en tu dispositivo, por eso tarda unos segundos.</string>
     <string name="cd_camera">Escanear con la camara</string>
-    <string name="camera_hint_aim">Apunta al texto. Se captura solo.</string>
+    <string name="camera_hint_aim">Coloca el texto dentro del recuadro. Se captura solo.</string>
     <string name="camera_hint_hold">Manten el pulso firme…</string>
     <string name="camera_hint_capturing">Capturando…</string>
     <string name="msg_camera_unavailable">Camara no disponible</string>

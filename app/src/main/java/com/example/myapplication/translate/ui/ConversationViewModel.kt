@@ -3,6 +3,9 @@ package com.example.myapplication.translate.ui
 import android.app.Application
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.ComponentCallbacks2
+import android.content.res.Configuration
+import android.graphics.RectF
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
@@ -12,6 +15,7 @@ import com.example.myapplication.translate.CrashReporter
 import com.example.myapplication.translate.ImageLoader
 import com.example.myapplication.translate.Language
 import com.example.myapplication.translate.Languages
+import com.example.myapplication.translate.ProcessExitLog
 import com.example.myapplication.translate.speech.Speaker
 import com.example.myapplication.translate.speech.SpeechToText
 import com.example.myapplication.translate.translator.EngineStatus
@@ -117,11 +121,29 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
     /** True while the camera or photo picker is in front of us. */
     private var awaitingExternalResult = false
 
+    /**
+     * Registered on the application rather than the Activity: memory pressure is a property of the
+     * process, and the engine outlives any one screen.
+     */
+    private val memoryCallbacks = object : ComponentCallbacks2 {
+        override fun onTrimMemory(level: Int) = onMemoryPressure(level)
+        override fun onConfigurationChanged(newConfig: Configuration) = Unit
+
+        @Deprecated("Superseded by onTrimMemory, but still required by ComponentCallbacks.")
+        override fun onLowMemory() = onMemoryPressure(ComponentCallbacks2.TRIM_MEMORY_COMPLETE)
+    }
+
     /** Resolves a string resource against the app context, so messages follow the phone locale. */
     private fun str(id: Int, vararg args: Any): String =
         getApplication<Application>().getString(id, *args)
 
     init {
+        application.registerComponentCallbacks(memoryCallbacks)
+
+        // Says whether the last run ended by being killed for RAM, which from inside the app is
+        // indistinguishable from the model having been unloaded.
+        ProcessExitLog.logLastExit(application)
+
         // Surface the previous crash, if the process died rather than exited cleanly.
         CrashReporter.consume(application)?.let { report ->
             Log.e(TAG, "Previous run crashed:\n$report")
@@ -183,6 +205,19 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
         // Clear any stale notice first: the status strip prefers `message` over live engine
         // state, so leaving "Model unloaded" there would mask the load about to happen.
         _state.update { it.copy(message = null) }
+        beginLoad()
+    }
+
+    /**
+     * Starts a load without touching [TranslateUiState.message].
+     *
+     * The automatic paths run during startup, where the message may be carrying a crash report or a
+     * note about reclaimed storage — things the user has not read yet and that a load they did not
+     * ask for has no business clearing.
+     */
+    private fun beginLoad() {
+        val status = _state.value.engineStatus
+        if (status is EngineStatus.Ready || status is EngineStatus.Loading) return
         loadJob = viewModelScope.launch { translator.prepare() }
     }
 
@@ -257,6 +292,67 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
         awaitingExternalResult = false
         idleUnloadJob?.cancel()
         idleUnloadJob = null
+    }
+
+    /**
+     * Android asking for memory back.
+     *
+     * Worth obeying because of the sheer size: the engine is ~2.6 GB, roughly a third of an 8 GB
+     * phone, which makes this process the most attractive thing on the device to kill. Releasing it
+     * on request is strictly better than being killed for it — the app survives with its transcript
+     * intact and reloads on the next turn, and the user's other apps stop being evicted to make
+     * room for weights nobody is using.
+     *
+     * Every level is logged, not just the ones acted on: which of these a given Android version
+     * actually delivers has changed release to release, and the log is the only way to know what
+     * a real device does.
+     */
+    private fun onMemoryPressure(level: Int) {
+        Log.i(TAG, "onTrimMemory(${describeTrimLevel(level)})")
+
+        val release = when (level) {
+            // Foreground, system running out. The user is mid-conversation, so only the genuinely
+            // urgent levels count — RUNNING_MODERATE fires often enough that acting on it would
+            // unload the model out from under normal use.
+            ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW,
+            ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL,
+
+            // Backgrounded and far enough down the kill list that the process is next. Unloading
+            // here is what buys survival; the 5-minute timer is too slow to help.
+            ComponentCallbacks2.TRIM_MEMORY_MODERATE,
+            ComponentCallbacks2.TRIM_MEMORY_COMPLETE -> true
+
+            // UI_HIDDEN and BACKGROUND are not pressure, only position: the app has gone to the
+            // back of the queue. On a device where a 2.6 GB process makes those fire the moment
+            // you switch away, acting on them would unload on every glance at another app and
+            // there would be no five minutes of grace left at all. The idle timer owns this window.
+            else -> false
+        }
+        if (!release) return
+
+        val current = _state.value
+        if (current.engineStatus !is EngineStatus.Ready || current.isBusy) {
+            // Closing the engine under a running generation is a native crash, not an error
+            // message. Being killed is the better outcome of the two.
+            return
+        }
+
+        Log.i(TAG, "Releasing the engine under memory pressure")
+        idleUnloadJob?.cancel()
+        idleUnloadJob = null
+        translator.close()
+        _state.update { it.copy(message = str(R.string.msg_model_unloaded_memory)) }
+    }
+
+    private fun describeTrimLevel(level: Int): String = when (level) {
+        ComponentCallbacks2.TRIM_MEMORY_COMPLETE -> "COMPLETE"
+        ComponentCallbacks2.TRIM_MEMORY_MODERATE -> "MODERATE"
+        ComponentCallbacks2.TRIM_MEMORY_BACKGROUND -> "BACKGROUND"
+        ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN -> "UI_HIDDEN"
+        ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL -> "RUNNING_CRITICAL"
+        ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW -> "RUNNING_LOW"
+        ComponentCallbacks2.TRIM_MEMORY_RUNNING_MODERATE -> "RUNNING_MODERATE"
+        else -> "level $level"
     }
 
     // ---- model acquisition -------------------------------------------------
@@ -343,7 +439,15 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
-    /** Swaps in the real engine. Does not load weights — that waits for use or [onLoadModel]. */
+    /**
+     * Swaps in the real engine and starts loading its weights.
+     *
+     * Loading used to wait for the first use or an explicit tap. It no longer does: every caller
+     * here — startup with weights present, a download finishing, a variant being selected — is a
+     * moment where the user has just made the model available and expects to be able to use it.
+     * Making them wait for a load they did not ask to defer only moved the delay to their first
+     * sentence.
+     */
     private fun useRealEngine(variant: ModelVariant, force: Boolean = false) {
         if (!force && translator is LiteRtTranslator) return
 
@@ -352,6 +456,7 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
         translator = LiteRtTranslator(getApplication(), variant)
         _state.update { it.copy(usingStubEngine = false) }
         observeEngineStatus()
+        beginLoad()
     }
 
     private fun useStubEngine() {
@@ -603,8 +708,8 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
      * the same pipeline as a picked photo — the direction detection and two-pass prompting are
      * exactly as necessary here, and a second code path would be a second place for them to drift.
      */
-    fun onCameraCapture(jpeg: ByteArray, rotationDegrees: Int) = startImageRun {
-        withContext(Dispatchers.IO) { ImageLoader.decodeCapturedJpeg(jpeg, rotationDegrees) }
+    fun onCameraCapture(jpeg: ByteArray, rotationDegrees: Int, crop: RectF) = startImageRun {
+        withContext(Dispatchers.IO) { ImageLoader.decodeCapturedJpeg(jpeg, rotationDegrees, crop) }
     }
 
     /**
@@ -883,6 +988,7 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
     }
 
     override fun onCleared() {
+        getApplication<Application>().unregisterComponentCallbacks(memoryCallbacks)
         translationJob?.cancel()
         speechToText.release()
         speaker.shutdown()

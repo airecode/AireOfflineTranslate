@@ -87,10 +87,10 @@
     <string name="msg_load_cancelled">已取消模型加载</string>
     <string name="loading_dialog_body">需要几秒钟，完成后才能翻译。</string>
     <string name="loading_dialog_cancelling">正在取消…</string>
-    <string name="progress_dialog_title">正在转写和翻译…</string>
+    <string name="progress_dialog_title">正在翻译…</string>
     <string name="progress_dialog_body">全部在您的设备上处理，因此需要几秒钟。</string>
     <string name="cd_camera">用相机扫描</string>
-    <string name="camera_hint_aim">将相机对准文字，会自动拍摄。</string>
+    <string name="camera_hint_aim">将文字放入框内，会自动拍摄。</string>
     <string name="camera_hint_hold">请保持稳定…</string>
     <string name="camera_hint_capturing">正在拍摄…</string>
     <string name="msg_camera_unavailable">相机不可用</string>

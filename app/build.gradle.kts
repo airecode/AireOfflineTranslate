@@ -14,8 +14,8 @@ android {
         applicationId = "com.aire.translate"
         minSdk = 33
         targetSdk = 37
-        versionCode = 38
-        versionName = "4.7-mic-stop"
+        versionCode = 39
+        versionName = "4.8-crop-autoload"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

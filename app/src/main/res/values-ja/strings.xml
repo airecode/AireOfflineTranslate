@@ -87,10 +87,10 @@
     <string name="msg_load_cancelled">モデルの読み込みをキャンセルしました</string>
     <string name="loading_dialog_body">数秒かかります。完了するまで翻訳できません。</string>
     <string name="loading_dialog_cancelling">キャンセルしています…</string>
-    <string name="progress_dialog_title">文字起こしと翻訳中…</string>
+    <string name="progress_dialog_title">翻訳中…</string>
     <string name="progress_dialog_body">すべて端末内で処理するため、数秒かかります。</string>
     <string name="cd_camera">カメラで読み取る</string>
-    <string name="camera_hint_aim">文字にカメラを向けてください。自動で撮影します。</string>
+    <string name="camera_hint_aim">枠の中に文字を入れてください。自動で撮影します。</string>
     <string name="camera_hint_hold">そのまま静止してください…</string>
     <string name="camera_hint_capturing">撮影中…</string>
     <string name="msg_camera_unavailable">カメラを利用できません</string>

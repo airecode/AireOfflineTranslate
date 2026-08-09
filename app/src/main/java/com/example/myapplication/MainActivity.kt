@@ -99,11 +99,11 @@ class MainActivity : ComponentActivity() {
 
                 if (showCamera) {
                     CameraOcrDialog(
-                        onCapture = { jpeg, rotation ->
+                        onCapture = { jpeg, rotation, crop ->
                             // Closed before the run starts, so the progress dialog is what the user
                             // sees next rather than a frozen preview.
                             showCamera = false
-                            viewModel.onCameraCapture(jpeg, rotation)
+                            viewModel.onCameraCapture(jpeg, rotation, crop)
                         },
                         onDismiss = { showCamera = false },
                     )
