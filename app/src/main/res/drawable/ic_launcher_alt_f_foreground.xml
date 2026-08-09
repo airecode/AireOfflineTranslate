@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Option F — "A".
+  The one that inverts the palette: a deep purple monogram on cream, pairing with
+  ic_launcher_alt_f_background. A light icon reads differently on a home screen full of saturated
+  squares, and a letterform is a different category of mark entirely from the rest of the set.
+
+  Built from two slanted bars sharing a flat apex plus a crossbar, rather than an outlined glyph,
+  so it needs no font and no even-odd fill. Feet reach y=74 and x=32/76, inside the safe zone.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <path
+        android:fillColor="#4A2E8C"
+        android:pathData="M49,34 L59,34 L42,74 L32,74 Z" />
+    <path
+        android:fillColor="#4A2E8C"
+        android:pathData="M49,34 L59,34 L76,74 L66,74 Z" />
+    <path
+        android:fillColor="#4A2E8C"
+        android:pathData="M40,58 h28 v9 h-28 z" />
+</vector>

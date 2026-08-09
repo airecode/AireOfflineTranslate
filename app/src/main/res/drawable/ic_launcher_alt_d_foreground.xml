@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Option D — "Two people".
+  Figurative rather than symbolic: the app is not a document translator, it is two people at a
+  table, and no other icon in this set says that. One figure solid and one held back, the way the
+  two panels differ, with the seam between them.
+
+  Widest points are the shoulders at x=26 and x=82, about 31 from centre — inside the 66dp safe zone.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- The seam the whole layout is built around, dropped behind both figures. -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.35"
+        android:pathData="M53,32 h2 v44 h-2 z" />
+
+    <!-- Far speaker, held back like the far panel. -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.72"
+        android:pathData="M38,44 m-9,0 a9,9 0 1,0 18,0 a9,9 0 1,0 -18,0" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.72"
+        android:pathData="M26,72 A12,12 0 0 1 50,72 Z" />
+
+    <!-- Near speaker. -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M70,44 m-9,0 a9,9 0 1,0 18,0 a9,9 0 1,0 -18,0" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M58,72 A12,12 0 0 1 82,72 Z" />
+</vector>
