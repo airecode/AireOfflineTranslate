@@ -65,11 +65,11 @@
     <string name="err_download_save">تعذّر حفظ النموذج</string>
     <string name="err_download_generic">فشل التنزيل (%1$d)</string>
     <string name="err_download_all_sources">فشلت جميع مصادر التنزيل. تحقّق من اتصالك وحاول مرة أخرى.</string>
-    <string name="cd_donate">ادعم هذا التطبيق</string>
-    <string name="donate_title">ادعم Aire Offline Translate</string>
-    <string name="donate_body">‏Aire Offline Translate مجاني ويعمل بالكامل على جهازك. إذا كان مفيدًا لك، فإن مساهمة لمرة واحدة تساعد على استمرار صيانته.</string>
+    <string name="cd_donate">ادعمني بفنجان قهوة</string>
+    <string name="donate_title">ادعمني بفنجان قهوة</string>
+    <string name="donate_body">‏Aire Offline Translate مجاني ويعمل بالكامل على جهازك. إذا كان مفيدًا لك، يمكنك أن تشتري لي شيئًا كشكر. لا يفتح ذلك أي ميزة — التطبيق نفسه في الحالتين.</string>
     <string name="donate_thanks">شكرًا لك — هذا يساعد فعلًا.</string>
-    <string name="donate_unavailable">خيارات التبرع غير متاحة حاليًا. تتطلب تثبيت التطبيق من Google Play.</string>
+    <string name="donate_unavailable">غير متاح حاليًا. يتطلب تثبيت التطبيق من Google Play.</string>
     <string name="action_close">إغلاق</string>
     <string name="cd_close_input">إغلاق إدخال النص</string>
     <string name="cd_cancel_run">إلغاء</string>
@@ -98,4 +98,10 @@
     <string name="model_required_title">يلزم نموذج الترجمة</string>
     <string name="model_required_body">لا يمكن الترجمة قبل تنزيل النموذج على الجهاز. يُنزّل مرة واحدة، ثم تعمل الترجمة بالكامل دون اتصال.</string>
     <string name="models_download_failed">فشل التنزيل — %1$s</string>
+    <string name="treat_1">اشترِ لي بسكويتة</string>
+    <string name="treat_5">اشترِ لي قهوة</string>
+    <string name="treat_10">اشترِ لي غداء</string>
+    <string name="treat_25">اشترِ لي عشاء</string>
+    <string name="treat_50">اشترِ لي وليمة</string>
+    <string name="treat_100">اشترِ لي بوفيه</string>
 </resources>

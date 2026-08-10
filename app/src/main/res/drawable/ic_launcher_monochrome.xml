@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Themed-icon variant. The system tints this a single colour, so the text lines cannot be a second
-  colour — evenOdd turns them into holes punched through the bubbles instead.
+  Themed-icon variant. The system tints this one flat colour, so the alpha that separates the near
+  and far speaker in the full-colour mark is dropped here — held-back white becomes a washed-out
+  patch of the tint rather than a second speaker. The gap between the two figures carries the
+  reading on its own, and the decorative seam goes with it to keep the silhouette clean.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
@@ -11,17 +13,15 @@
 
     <path
         android:fillColor="#FFFFFF"
-        android:fillType="evenOdd"
-        android:pathData="M34,30 H62 A6,6 0 0 1 68,36 V44 A6,6 0 0 1 62,50 H34 A6,6 0 0 1 28,44 V36 A6,6 0 0 1 34,30 Z
-                          M34,50 L34,59 L44,50 Z
-                          M34,36 h28 v3 h-28 z
-                          M34,42 h20 v3 h-20 z" />
+        android:pathData="M38,44 m-9,0 a9,9 0 1,0 18,0 a9,9 0 1,0 -18,0" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M26,72 A12,12 0 0 1 50,72 Z" />
 
     <path
         android:fillColor="#FFFFFF"
-        android:fillType="evenOdd"
-        android:pathData="M46,58 H74 A6,6 0 0 1 80,64 V72 A6,6 0 0 1 74,78 H46 A6,6 0 0 1 40,72 V64 A6,6 0 0 1 46,58 Z
-                          M74,58 L74,49 L64,58 Z
-                          M54,63 h20 v3 h-20 z
-                          M46,69 h28 v3 h-28 z" />
+        android:pathData="M70,44 m-9,0 a9,9 0 1,0 18,0 a9,9 0 1,0 -18,0" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M58,72 A12,12 0 0 1 82,72 Z" />
 </vector>

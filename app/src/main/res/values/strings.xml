@@ -75,11 +75,11 @@
     <string name="err_download_save">Could not save model</string>
     <string name="err_download_generic">Download failed (%1$d)</string>
     <string name="err_download_all_sources">All download sources failed. Check your connection and try again.</string>
-    <string name="cd_donate">Support this app</string>
-    <string name="donate_title">Support Aire Offline Translate</string>
-    <string name="donate_body">Aire Offline Translate is free and runs entirely on your device. If it is useful to you, a one-off contribution helps keep it maintained.</string>
+    <string name="cd_donate">Buy me a coffee</string>
+    <string name="donate_title">Buy me a coffee</string>
+    <string name="donate_body">Aire Offline Translate is free and runs entirely on your device. If it has been useful, you can buy me something as a thank-you. It unlocks nothing — the app works exactly the same either way.</string>
     <string name="donate_thanks">Thank you — that genuinely helps.</string>
-    <string name="donate_unavailable">Donation options are not available right now. They require the app to be installed from Google Play.</string>
+    <string name="donate_unavailable">This is not available right now. It requires the app to be installed from Google Play.</string>
     <string name="action_close">Close</string>
     <string name="cd_close_input">Close text input</string>
     <string name="cd_cancel_run">Cancel</string>
@@ -108,4 +108,10 @@
     <string name="model_required_title">Translation model needed</string>
     <string name="model_required_body">Nothing can be translated until the model is on this device. It downloads once, then every translation runs offline.</string>
     <string name="models_download_failed">Download failed — %1$s</string>
+    <string name="treat_1">Buy me a biscuit</string>
+    <string name="treat_5">Buy me a coffee</string>
+    <string name="treat_10">Buy me lunch</string>
+    <string name="treat_25">Buy me dinner</string>
+    <string name="treat_50">Buy me a feast</string>
+    <string name="treat_100">Buy me a buffet</string>
 </resources>

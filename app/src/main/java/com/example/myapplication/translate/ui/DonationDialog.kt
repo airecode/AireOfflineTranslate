@@ -2,6 +2,7 @@ package com.example.myapplication.translate.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -13,6 +14,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -23,11 +25,12 @@ import com.example.myapplication.R
 import com.example.myapplication.translate.billing.DonationBilling
 
 /**
- * Donation tiers, priced by Play rather than by us.
+ * Tip tiers, priced by Play rather than by us.
  *
  * Each button shows [DonationBilling.Tier.formattedPrice] — the localised string Play returns for
  * the user's own country and currency. Hardcoding "$5" would show dollars to someone paying in
- * yen, at a number that is not what they would be charged.
+ * yen, at a number that is not what they would be charged, which is also why the treat beside the
+ * price never names an amount: "buy me a coffee" travels, "$5 coffee" does not.
  */
 @Composable
 fun DonationDialog(
@@ -69,7 +72,14 @@ fun DonationDialog(
                                 ),
                                 modifier = Modifier.fillMaxWidth(),
                             ) {
-                                Text(tier.formattedPrice)
+                                Row(
+                                    Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                ) {
+                                    val label = treatLabel(tier.productId)
+                                    if (label != null) Text(stringResource(label))
+                                    Text(tier.formattedPrice)
+                                }
                             }
                         }
                     }
@@ -106,4 +116,23 @@ fun DonationDialog(
             }
         },
     )
+}
+
+/**
+ * The treat each tier stands for.
+ *
+ * Deliberately kept here rather than on the billing tier: these are copy, they change with the
+ * wording rather than with the catalogue, and the billing layer has no business holding string
+ * resources. An unrecognised id falls back to showing the price alone, so adding a product in Play
+ * Console before adding its label here degrades to something sane rather than crashing.
+ */
+@StringRes
+private fun treatLabel(productId: String): Int? = when (productId) {
+    "donate_1" -> R.string.treat_1
+    "donate_5" -> R.string.treat_5
+    "donate_10" -> R.string.treat_10
+    "donate_25" -> R.string.treat_25
+    "donate_50" -> R.string.treat_50
+    "donate_100" -> R.string.treat_100
+    else -> null
 }

@@ -65,11 +65,11 @@
     <string name="err_download_save">No se pudo guardar el modelo</string>
     <string name="err_download_generic">Error de descarga (%1$d)</string>
     <string name="err_download_all_sources">Fallaron todas las fuentes de descarga. Comprueba tu conexión e inténtalo de nuevo.</string>
-    <string name="cd_donate">Apoyar esta app</string>
-    <string name="donate_title">Apoya a Aire Offline Translate</string>
-    <string name="donate_body">Aire Offline Translate es gratuita y funciona por completo en tu dispositivo. Si te resulta útil, una aportación puntual ayuda a mantenerla.</string>
+    <string name="cd_donate">Invitame a un cafe</string>
+    <string name="donate_title">Invitame a un cafe</string>
+    <string name="donate_body">Aire Offline Translate es gratuita y funciona por completo en tu dispositivo. Si te ha resultado util, puedes invitarme a algo como agradecimiento. No desbloquea nada: la app funciona igual en cualquier caso.</string>
     <string name="donate_thanks">Gracias, ayuda de verdad.</string>
-    <string name="donate_unavailable">Las opciones de donación no están disponibles ahora mismo. Requieren que la app se haya instalado desde Google Play.</string>
+    <string name="donate_unavailable">No esta disponible ahora mismo. Requiere que la app se haya instalado desde Google Play.</string>
     <string name="action_close">Cerrar</string>
     <string name="cd_close_input">Cerrar la entrada de texto</string>
     <string name="cd_cancel_run">Cancelar</string>
@@ -98,4 +98,10 @@
     <string name="model_required_title">Falta el modelo de traduccion</string>
     <string name="model_required_body">No se puede traducir nada hasta que el modelo este en este dispositivo. Se descarga una vez y despues todo funciona sin conexion.</string>
     <string name="models_download_failed">Error de descarga — %1$s</string>
+    <string name="treat_1">Invitame a una galleta</string>
+    <string name="treat_5">Invitame a un cafe</string>
+    <string name="treat_10">Invitame a comer</string>
+    <string name="treat_25">Invitame a cenar</string>
+    <string name="treat_50">Invitame a un banquete</string>
+    <string name="treat_100">Invitame a un bufet</string>
 </resources>

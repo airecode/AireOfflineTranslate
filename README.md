@@ -199,17 +199,26 @@ genuinely catastrophic secret in an Android repository.
 
 ---
 
-## Donations
+## Tips
 
-The heart icon opens a donation sheet backed by Google Play Billing. The products are consumable
-one-time purchases and must exist in Play Console under exactly these IDs:
+The heart icon opens a tip sheet backed by Google Play Billing. Each tier is named for a treat —
+a biscuit, a coffee, lunch, dinner, a feast, a buffet — rather than an amount, because the amount
+beside it is whatever Play charges in the user's own currency.
+
+The framing is deliberate. Both stores allow tipping a developer through in-app purchase; neither
+allows collecting charitable donations that way unless you are a registered nonprofit. Tips must
+also unlock nothing, which is why the sheet says so outright.
+
+The products are consumable one-time purchases and must exist in Play Console under exactly these
+IDs:
 
 ```
 donate_1   donate_5   donate_10   donate_25   donate_50   donate_100
 ```
 
-Prices shown in the app come from Play, localised to the user's currency — the numbers above only
-name the products.
+The IDs are internal and can stay as they are, but **the product display names in Play Console are
+what the purchase sheet shows** — rename those to match the treats, or the app will offer to sell
+someone a coffee and Play will ask them to confirm a donation.
 
 **Billing cannot be tested from a sideloaded APK.** The app must be installed from a Play track,
 so the sheet shows an explanatory message off-Play rather than an empty list.

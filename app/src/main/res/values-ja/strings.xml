@@ -65,11 +65,11 @@
     <string name="err_download_save">モデルを保存できませんでした</string>
     <string name="err_download_generic">ダウンロードに失敗しました（%1$d）</string>
     <string name="err_download_all_sources">すべてのダウンロード元で失敗しました。接続を確認して再試行してください。</string>
-    <string name="cd_donate">このアプリを支援する</string>
-    <string name="donate_title">Aire Offline Translate を支援</string>
-    <string name="donate_body">Aire Offline Translate は無料で、すべて端末内で動作します。お役に立てているなら、一度きりのご支援が開発の継続に役立ちます。</string>
+    <string name="cd_donate">コーヒーをごちそう</string>
+    <string name="donate_title">コーヒーをごちそう</string>
+    <string name="donate_body">Aire Offline Translate は無料で、すべて端末内で動作します。お役に立てたなら、お礼に何かごちそうしていただけます。機能は一切増えません — どちらでもアプリは同じです。</string>
     <string name="donate_thanks">ありがとうございます。とても励みになります。</string>
-    <string name="donate_unavailable">現在、支援のオプションを利用できません。Google Play からインストールされたアプリが必要です。</string>
+    <string name="donate_unavailable">現在ご利用いただけません。Google Play からインストールされたアプリが必要です。</string>
     <string name="action_close">閉じる</string>
     <string name="cd_close_input">テキスト入力を閉じる</string>
     <string name="cd_cancel_run">キャンセル</string>
@@ -98,4 +98,10 @@
     <string name="model_required_title">翻訳モデルが必要です</string>
     <string name="model_required_body">モデルを端末にダウンロードするまで翻訳できません。ダウンロードは一度だけで、その後はすべてオフラインで動作します。</string>
     <string name="models_download_failed">ダウンロードに失敗しました — %1$s</string>
+    <string name="treat_1">ビスケットをごちそう</string>
+    <string name="treat_5">コーヒーをごちそう</string>
+    <string name="treat_10">ランチをごちそう</string>
+    <string name="treat_25">ディナーをごちそう</string>
+    <string name="treat_50">ご饅走をごちそう</string>
+    <string name="treat_100">ビュッフェをごちそう</string>
 </resources>
