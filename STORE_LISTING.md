@@ -174,7 +174,7 @@ registered nonprofits, whereas tipping a developer is fine.
 - [ ] Upload key created, `keystore.properties` filled in, `bundleRelease` produces a signed `.aab`
 - [ ] Privacy policy hosted at a public URL
 - [ ] At least 2 phone screenshots
-- [ ] App icon 512×512 PNG and feature graphic 1024×500 PNG
+- [x] App icon 512×512 PNG and feature graphic 1024×500 PNG — in `store/`, regenerate with `python store/generate.py`
 - [ ] Data safety form completed
 - [ ] Content rating questionnaire completed
 - [ ] Target audience declared
