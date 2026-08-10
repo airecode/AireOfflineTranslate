@@ -34,7 +34,7 @@ android {
         minSdk = 33
         targetSdk = 37
         versionCode = 46
-        versionName = "5.3-icon-tips"
+        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
