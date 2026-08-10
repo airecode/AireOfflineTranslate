@@ -33,7 +33,7 @@ android {
         applicationId = "com.aire.translate"
         minSdk = 33
         targetSdk = 37
-        versionCode = 45
+        versionCode = 46
         versionName = "5.3-icon-tips"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

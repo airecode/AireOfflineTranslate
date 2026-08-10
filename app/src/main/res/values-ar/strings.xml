@@ -104,4 +104,5 @@
     <string name="treat_25">اشترِ لي عشاء</string>
     <string name="treat_50">اشترِ لي وليمة</string>
     <string name="treat_100">اشترِ لي بوفيه</string>
+    <string name="msg_model_not_installed">نموذج الترجمة غير مثبّت</string>
 </resources>

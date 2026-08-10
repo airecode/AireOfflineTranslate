@@ -114,4 +114,5 @@
     <string name="treat_25">Buy me dinner</string>
     <string name="treat_50">Buy me a feast</string>
     <string name="treat_100">Buy me a buffet</string>
+    <string name="msg_model_not_installed">Translation model is not installed</string>
 </resources>

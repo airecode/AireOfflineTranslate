@@ -209,6 +209,10 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
     fun onLoadModel() {
         val status = _state.value.engineStatus
         if (status is EngineStatus.Ready || status is EngineStatus.Loading) return
+        // Loading needs weights as much as translating does. Without this the button walks
+        // straight into the engine's own "no such file" and reports it as an error, which reads
+        // as a broken app rather than as one thing left to do.
+        if (!modelReady()) return
         // Clear any stale notice first: the status strip prefers `message` over live engine
         // state, so leaving "Model unloaded" there would mask the load about to happen.
         _state.update { it.copy(message = null) }

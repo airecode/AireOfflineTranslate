@@ -104,4 +104,5 @@
     <string name="treat_25">ディナーをごちそう</string>
     <string name="treat_50">ご饅走をごちそう</string>
     <string name="treat_100">ビュッフェをごちそう</string>
+    <string name="msg_model_not_installed">翻訳モデルがインストールされていません</string>
 </resources>

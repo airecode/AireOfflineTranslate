@@ -3,6 +3,7 @@ package com.example.myapplication.translate.translator
 import android.content.Context
 import android.os.Build
 import android.util.Log
+import com.example.myapplication.R
 import com.example.myapplication.translate.Language
 import com.google.ai.edge.litertlm.Backend
 import com.google.ai.edge.litertlm.Content
@@ -83,7 +84,11 @@ class LiteRtTranslator(context: Context, private val variant: ModelVariant) : Tr
         // Size-checked rather than exists-checked: a partial file would otherwise reach Engine()
         // and fail deep inside the native loader with a far less useful message.
         if (!ModelLocation.isInstalled(appContext, variant)) {
-            _status.value = EngineStatus.Unavailable("Model not found at ${file.absolutePath}")
+            // The path belongs in the log, not on screen: a user shown
+            // /storage/emulated/0/Android/data/... learns nothing they can act on.
+            Log.w(TAG, "No weights for ${variant.id} at ${file.absolutePath}")
+            _status.value =
+                EngineStatus.Unavailable(appContext.getString(R.string.msg_model_not_installed))
             return
         }
 
