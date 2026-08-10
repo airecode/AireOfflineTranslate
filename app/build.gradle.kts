@@ -1,8 +1,27 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     // AGP 9 ships Kotlin built in, so only the Compose compiler plugin is applied on top.
     alias(libs.plugins.compose.compiler)
 }
+
+/**
+ * Release signing details, kept out of the repository.
+ *
+ * `keystore.properties` is gitignored along with the keystore itself. A leaked upload key lets
+ * someone publish builds that Play accepts as yours, which is not a thing a git history should ever
+ * be able to hand out. Absent the file the release build simply goes unsigned, so cloning and
+ * building still works for anyone who only wants a debug APK.
+ */
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties().apply {
+    if (keystorePropertiesFile.exists()) {
+        FileInputStream(keystorePropertiesFile).use { load(it) }
+    }
+}
+val hasReleaseSigning = keystorePropertiesFile.exists()
 
 android {
     namespace = "com.example.myapplication"
@@ -26,8 +45,23 @@ android {
         buildConfig = true
     }
 
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = rootProject.file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
+            // Null without a keystore, which leaves an unsigned build rather than failing the
+            // configuration phase for anyone who just cloned the repo.
+            signingConfig = if (hasReleaseSigning) signingConfigs.getByName("release") else null
+
             optimization {
                 enable = false
             }
