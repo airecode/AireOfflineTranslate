@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -76,7 +77,17 @@ class LiteRtTranslator(context: Context, private val variant: ModelVariant) : Tr
 
     override suspend fun prepare() {
         when (_status.value) {
-            is EngineStatus.Ready, is EngineStatus.Loading -> return
+            is EngineStatus.Ready -> return
+
+            // Someone else is already loading. Wait for them to finish rather than returning
+            // straight away: callers treat this as "make the engine ready", and returning while a
+            // load is still in flight left them checking the status, finding Loading, and reporting
+            // the engine as unavailable when it was seconds from being usable.
+            is EngineStatus.Loading -> {
+                status.first { it !is EngineStatus.Loading }
+                return
+            }
+
             else -> Unit
         }
 

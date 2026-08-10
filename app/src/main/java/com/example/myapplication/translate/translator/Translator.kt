@@ -37,7 +37,14 @@ sealed interface EngineStatus {
 interface Translator : AutoCloseable {
     val status: StateFlow<EngineStatus>
 
-    /** Loads the model. Safe to call more than once; subsequent calls are no-ops. */
+    /**
+     * Makes the engine ready, and does not return until it either is or has failed.
+     *
+     * Safe to call more than once and from more than one place at a time: a call arriving while a
+     * load is already running waits for that one rather than starting a second or returning early.
+     * Callers check [status] immediately afterwards, so returning while a load is still in flight
+     * would read as failure.
+     */
     suspend fun prepare()
 
     /**
