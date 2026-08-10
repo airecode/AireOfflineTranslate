@@ -573,6 +573,12 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
         speaker.stop()
         translationJob?.cancel()
 
+        // Start the engine now rather than when the transcript arrives. The weights take seconds to
+        // load, and the user is about to spend seconds talking — overlapping the two means the model
+        // is usually ready by the time they stop. Waiting until after made an unloaded engine look
+        // like nothing had happened at all: recording ended, then a long pause, then a load.
+        beginLoad()
+
         _state.update {
             it.copy(
                 activeSide = side,

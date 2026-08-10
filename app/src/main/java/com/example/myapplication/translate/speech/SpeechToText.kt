@@ -154,7 +154,10 @@ class SpeechToText(context: Context) {
         SpeechRecognizer.ERROR_CLIENT,
         SpeechRecognizer.ERROR_NETWORK,
         SpeechRecognizer.ERROR_NETWORK_TIMEOUT,
-        SpeechRecognizer.ERROR_SERVER -> true
+        SpeechRecognizer.ERROR_SERVER,
+        // The recognition service dropping its connection mid-utterance. Nothing to do with the
+        // words already recognised, so losing them to it is pure waste.
+        SpeechRecognizer.ERROR_SERVER_DISCONNECTED -> true
         else -> false
     }
 

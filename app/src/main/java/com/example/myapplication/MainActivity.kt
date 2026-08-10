@@ -155,8 +155,11 @@ class MainActivity : ComponentActivity() {
                 // screen already and the user should be able to read along.
                 when {
                     // Driven by engine status rather than a local flag, so this covers the
-                    // auto-load paths and not just the load button.
-                    state.engineStatus is EngineStatus.Loading -> LoadingDialog(
+                    // auto-load paths and not just the load button. Excluded while recording:
+                    // the engine is deliberately warmed up during LISTENING, and a modal there
+                    // would cover the stop button and interrupt someone mid-sentence.
+                    state.engineStatus is EngineStatus.Loading &&
+                        state.phase != Phase.LISTENING -> LoadingDialog(
                         modelName = state.activeVariant.displayName,
                         cancelling = state.cancellingLoad,
                         onCancel = viewModel::onCancelLoad,
