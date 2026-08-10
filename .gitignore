@@ -25,5 +25,10 @@ local.properties
 keystore.properties
 signing.properties
 
+# Play App Signing certificates. Public information — they can be read out of any installed copy
+# of the app — but they are console downloads, not source, and nothing in the build reads them.
+certificates.zip
+*.der
+
 # Claude Code machine-local settings. Contains absolute local paths.
 .claude/settings.local.json
