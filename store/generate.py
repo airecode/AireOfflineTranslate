@@ -8,11 +8,15 @@ The shapes below are the ones in app/src/main/res/drawable/ic_launcher_foregroun
 108-unit viewport, so the store art and the icon on the user's home screen cannot drift apart. If
 the launcher icon changes, change these and re-run rather than editing the PNGs by hand.
 
+Neither image contains text. That is deliberate: the feature graphic is a per-language asset, so
+words in it would have to be redrawn for every store listing added later, and Play already shows the
+app name beside the graphic in most placements.
+
 Requires Pillow:  pip install pillow
 """
 import os
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw
 
 OUT = os.path.dirname(os.path.abspath(__file__))
 
@@ -21,24 +25,12 @@ WHITE = (255, 255, 255)
 FAR_ALPHA = 184                 # 0.72, the far speaker
 SEAM_ALPHA = 89                 # 0.35, the seam
 
-# First match wins. Any grotesque sans works; these are just what tends to be installed.
-BOLD_CANDIDATES = [
-    'C:/Windows/Fonts/arialbd.ttf',
-    '/System/Library/Fonts/Supplemental/Arial Bold.ttf',
-    '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',
-]
-REGULAR_CANDIDATES = [
-    'C:/Windows/Fonts/arial.ttf',
-    '/System/Library/Fonts/Supplemental/Arial.ttf',
-    '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
-]
-
-
-def font(candidates, size):
-    for path in candidates:
-        if os.path.exists(path):
-            return ImageFont.truetype(path, size)
-    raise SystemExit('No usable font found. Add one to the candidate lists in this script.')
+# The mark occupies x 26..82 and y 32..76 of the 108-unit viewport, so centring it means centring
+# that rather than the viewport. The shoulders are drawn as the *upper* half of an ellipse whose box
+# runs to y=84, so they stop at its middle, y=72 — taking the box at face value puts the whole mark
+# too high.
+MARK_CENTRE_X = 54.0
+MARK_CENTRE_Y = 54.0
 
 
 def draw_mark(size, scale, ox, oy):
@@ -88,24 +80,21 @@ def store_icon():
 
 
 def feature_graphic():
-    """1024x500. Mark on the left, name and one line of what the app does on the right."""
+    """
+    1024x500, wordless: the mark alone, centred.
+
+    Centred rather than set to one side because Play crops this asset to different shapes depending
+    on where it appears, and anything in the middle survives every crop.
+    """
     w, h = 1024, 500
-    scale = 340 / 108.0
 
-    # Offsets are worked back from where the mark's optical centre should land, not from its corner.
-    img = draw_mark((w, h), scale, ox=232 - 54 * scale, oy=h / 2 - 54 * scale)
-    d = ImageDraw.Draw(img)
-
-    title = font(BOLD_CANDIDATES, 62)
-    body = font(REGULAR_CANDIDATES, 30)
-
-    # Two title lines at 72px leading, a gap, two body lines at 40px — centred as one block.
-    x = 410
-    top = h / 2 - (72 * 2 + 22 + 40 * 2) / 2
-    d.text((x, top), 'Aire Offline', font=title, fill=WHITE)
-    d.text((x, top + 72), 'Translate', font=title, fill=WHITE)
-    d.text((x, top + 166), 'Face-to-face translation', font=body, fill=WHITE)
-    d.text((x, top + 206), 'that runs on your phone', font=body, fill=(206, 196, 232))
+    # Sized so the mark stands about 286px tall — dominant without crowding the edges.
+    scale = 6.5
+    img = draw_mark(
+        (w, h), scale,
+        ox=w / 2 - MARK_CENTRE_X * scale,
+        oy=h / 2 - MARK_CENTRE_Y * scale,
+    )
 
     path = os.path.join(OUT, 'play-feature-1024x500.png')
     img.save(path, 'PNG')
