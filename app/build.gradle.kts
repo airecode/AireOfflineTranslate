@@ -33,7 +33,7 @@ android {
         applicationId = "com.aire.translate"
         minSdk = 33
         targetSdk = 37
-        versionCode = 44
+        versionCode = 45
         versionName = "5.3-icon-tips"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -41,8 +41,6 @@ android {
 
     buildFeatures {
         compose = true
-        // Exposes VERSION_NAME so the running build is visible in the UI.
-        buildConfig = true
     }
 
     signingConfigs {

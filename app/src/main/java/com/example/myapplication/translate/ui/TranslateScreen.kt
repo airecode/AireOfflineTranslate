@@ -62,7 +62,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.myapplication.BuildConfig
 import com.example.myapplication.R
 import com.example.myapplication.translate.Language
 import com.example.myapplication.translate.Languages
@@ -226,15 +225,6 @@ private fun TopBar(
 
         Spacer(Modifier.weight(1f))
 
-        // Build stamp. Cheap, and it removes any doubt about which APK is actually running when a
-        // bug report arrives as a screenshot.
-        Text(
-            text = BuildConfig.VERSION_NAME,
-            fontSize = 10.sp,
-            maxLines = 1,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(end = 4.dp),
-        )
         // Permanent entry to model management. The banner below only appears when nothing is
         // installed, so without this there is no route to switching or deleting a model once one
         // is on disk.
