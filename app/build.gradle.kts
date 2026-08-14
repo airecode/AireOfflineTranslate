@@ -33,7 +33,7 @@ android {
         applicationId = "com.aire.translate"
         minSdk = 33
         targetSdk = 37
-        versionCode = 49
+        versionCode = 50
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
