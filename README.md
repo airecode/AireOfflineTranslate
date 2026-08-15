@@ -103,10 +103,28 @@ first that can actually execute a kernel:
 
 1. `GOOGLE_TENSOR` — Pixel devices
 2. `GPU` — Snapdragon, MediaTek and anything else exposing OpenCL
-3. `CPU` — works everywhere, but time-to-first-token is measured in seconds
+3. `CPU` — works everywhere, and on some hardware is the only thing that does
 
 **Pixel devices have no OpenCL driver**, so the GPU backend fails there with "Can not find OpenCL
 library on this device" — hence the Tensor-specific path being tried first on that hardware.
+
+**In practice Pixels still land on CPU, and that is not a bug in this app.** `GOOGLE_TENSOR` maps to
+LiteRT-LM's `GOOGLE_TENSOR_ARTISAN` backend, which needs a Tensor-compiled decoder packaged inside
+the `.litertlm`. The generic weights this app downloads do not contain one, and the only Tensor
+build Google publishes is for **Tensor G5 (Pixel 10)** — there is nothing for G3 or G4, so a Pixel 8
+or 9 has no accelerated path at all. Both doomed attempts are still made once, because a device
+that *can* use them should.
+
+Expect roughly:
+
+| Hardware | Backend reached | Time-to-first-token |
+|---|---|---|
+| Snapdragon / Exynos | `GPU` | ~0.3 s |
+| Pixel (Tensor G3/G4) | `CPU` | ~2 s |
+| Everything else | `CPU` | ~2 s |
+
+The winning backend is remembered per device, so only the first load after install pays for the
+failed attempts. If a system update later withdraws a driver the whole chain is retried.
 
 The download dialog closes itself the moment the weights land, and stays open with the reason and a
 retry when a download fails.
@@ -179,8 +197,8 @@ Two build details are easy to trip over:
 ### Command line
 
 ```bash
-git clone <your-repo-url>
-cd gemma
+git clone https://github.com/airecode/AireOfflineTranslate.git
+cd AireOfflineTranslate
 ```
 
 Point Gradle at a JDK if it is not already on your `PATH`:
