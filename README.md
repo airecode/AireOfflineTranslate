@@ -6,6 +6,16 @@ no text, audio or image ever leaves the phone.
 
 Translation runs on **Gemma 4** via Google's LiteRT-LM runtime.
 
+<p align="center">
+  <img src="docs/screenshots/conversation.png" width="330" alt="A finished turn: the English sentence on the near half, its Japanese translation on the far half, upside down so it reads the right way up from across the table.">
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/idle.png" width="330" alt="The idle screen, each half prompting in its own language.">
+</p>
+
+<p align="center"><em>The phone lies flat between two people. The far half is rotated 180° so it
+reads the right way up from the other side of the table — each person taps their own microphone and
+reads their own language.</em></p>
+
 ---
 
 ## 🙋 Testers wanted
