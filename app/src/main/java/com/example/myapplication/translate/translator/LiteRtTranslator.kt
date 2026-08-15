@@ -36,6 +36,18 @@ class LiteRtTranslator(context: Context, private val variant: ModelVariant) : Tr
 
     private val appContext = context.applicationContext
 
+    /**
+     * Remembers which backend actually worked, so the next load does not rediscover it.
+     *
+     * On hardware where the first choices are hopeless the cost is paid on every single launch:
+     * a Pixel builds and initialises an [Engine] against a 2.59 GB file for GOOGLE_TENSOR, throws
+     * it away, does it again for GPU, throws that away, and only then reaches CPU. The answer never
+     * changes for a given device, so it is worth writing down.
+     */
+    private val prefs = appContext.getSharedPreferences(BACKEND_PREFS, Context.MODE_PRIVATE)
+
+    private fun keyBackend() = "backend_${variant.id}"
+
     private val _status = MutableStateFlow<EngineStatus>(EngineStatus.Idle)
     override val status: StateFlow<EngineStatus> = _status.asStateFlow()
 
@@ -164,6 +176,9 @@ class LiteRtTranslator(context: Context, private val variant: ModelVariant) : Tr
 
                     engine = created
                     activeBackend = backend.name
+                    // Written after the probe, so what is remembered is a backend that has
+                    // provably executed a kernel — not merely one that initialised.
+                    prefs.edit().putString(keyBackend(), backend.name).apply()
                     Log.i(TAG, "${variant.displayName} running on ${backend.name}")
                     _status.value = EngineStatus.Ready(backend.name)
                     return@withContext
@@ -180,6 +195,9 @@ class LiteRtTranslator(context: Context, private val variant: ModelVariant) : Tr
                 return@withContext
             }
 
+            // Nothing worked, so whatever was remembered is wrong now. Leaving it would keep
+            // promoting a dead backend to the front of every future attempt.
+            prefs.edit().remove(keyBackend()).apply()
             Log.e(TAG, "No usable backend for Gemma 4. Attempts: $failures")
             _status.value = EngineStatus.Unavailable("No backend accepted the model — $failures")
         }
@@ -217,17 +235,31 @@ class LiteRtTranslator(context: Context, private val variant: ModelVariant) : Tr
     }
 
     /**
-     * Accelerators to try, best first.
+     * Accelerators to try, best first — unless a previous load already settled the question.
      *
      * Ordering is not cosmetic. [Backend.GPU] talks to OpenCL, and Google's Tensor SoCs ship no
      * OpenCL driver — on a Pixel it fails with "Can not find OpenCL library on this device". Those
      * devices have their own path via [Backend.GOOGLE_TENSOR], so it is tried first there. CPU is
      * always last: it works everywhere but its time-to-first-token is measured in seconds.
+     *
+     * A remembered backend is promoted to the front rather than used on its own. Whatever worked
+     * last time is overwhelmingly likely to work now, but a system update can withdraw a driver, so
+     * the rest of the chain stays behind it as a fallback.
      */
-    private fun candidateBackends(): List<Backend> = buildList {
-        if (isGoogleTensorDevice()) add(Backend.GOOGLE_TENSOR())
-        add(Backend.GPU())
-        add(Backend.CPU())
+    private fun candidateBackends(): List<Backend> {
+        val ordered = buildList {
+            if (isGoogleTensorDevice()) add(Backend.GOOGLE_TENSOR())
+            add(Backend.GPU())
+            add(Backend.CPU(threadCount = CPU_THREADS))
+        }
+
+        val remembered = prefs.getString(keyBackend(), null) ?: return ordered
+        val index = ordered.indexOfFirst { it.name == remembered }
+        // -1 is a backend this build no longer offers; 0 is already first. Neither needs reordering.
+        if (index <= 0) return ordered
+
+        Log.i(TAG, "Trying remembered backend $remembered first")
+        return listOf(ordered[index]) + ordered.filterIndexed { i, _ -> i != index }
     }
 
     private fun isGoogleTensorDevice(): Boolean =
@@ -394,6 +426,19 @@ class LiteRtTranslator(context: Context, private val variant: ModelVariant) : Tr
 
     companion object {
         private const val TAG = "LiteRtTranslator"
+
+        /** Shared with the rest of the app; the backend memo is keyed per variant inside it. */
+        private const val BACKEND_PREFS = "aire_prefs"
+
+        /**
+         * XNNPACK worker threads for the CPU backend.
+         *
+         * Four because that is what the published Gemma 4 CPU figures were measured with, and
+         * because it matches the big-core count on the phones this app targets. It matters more
+         * than it looks: on a Tensor device CPU is not a fallback but the only backend that runs,
+         * since Pixels have no OpenCL driver and Google publishes Tensor weights only for G5.
+         */
+        private const val CPU_THREADS = 4
 
         /** Utterances are short; a large KV cache would only cost memory. */
         private const val MAX_NUM_TOKENS = 1024
