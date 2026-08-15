@@ -24,12 +24,17 @@ The app is in **closed testing on Google Play** and needs volunteers before it c
 publicly. Google requires twelve testers, so a handful of people genuinely makes the difference
 between this shipping and not.
 
-**Email [jasonlim1912@gmail.com](mailto:jasonlim1912@gmail.com)** with the Google account address
-you use on the Play Store — that exact address is what the invitation is tied to, so a different
-one will not work.
+**Step 1 — email [jasonlim1912@gmail.com](mailto:jasonlim1912@gmail.com)** with the Google account
+address you use on the Play Store. That exact address is what access is tied to, so a different one
+will not work. This step cannot be skipped: Google only lets people on the list into a closed test.
 
-You will get back an opt-in link. Open it on your phone, tap **Become a tester**, then install from
-Play as normal.
+**Step 2 — open the opt-in link on your phone:**
+
+### 👉 https://play.google.com/apps/testing/com.aire.translate
+
+Tap **Become a tester**, then install from Play as normal. If that page says the test is not
+available to you, it means either step 1 has not been done yet or you are signed in with a different
+Google account than the one you sent.
 
 Before volunteering, check your phone can actually run it:
 
