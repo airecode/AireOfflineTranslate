@@ -8,6 +8,36 @@ Translation runs on **Gemma 4** via Google's LiteRT-LM runtime.
 
 ---
 
+## 🙋 Testers wanted
+
+The app is in **closed testing on Google Play** and needs volunteers before it can be released
+publicly. Google requires twelve testers, so a handful of people genuinely makes the difference
+between this shipping and not.
+
+**Email [jasonlim1912@gmail.com](mailto:jasonlim1912@gmail.com)** with the Google account address
+you use on the Play Store — that exact address is what the invitation is tied to, so a different
+one will not work.
+
+You will get back an opt-in link. Open it on your phone, tap **Become a tester**, then install from
+Play as normal.
+
+Before volunteering, check your phone can actually run it:
+
+| | |
+|---|---|
+| **Android** | 13 or newer |
+| **RAM** | 6 GB or more — the model holds ~2.6 GB while loaded |
+| **Storage** | 2.6 GB free, downloaded over Wi-Fi on first use |
+
+There is nothing to pay and nothing to sign up for. What is genuinely useful is running one real
+conversation in a language pair you know and saying whether the translation was usable — including
+if it was not. Bug reports are welcome as
+[issues](../../issues), and so is "this worked fine".
+
+Testing runs for two weeks, and you can leave at any time from the same opt-in link.
+
+---
+
 ## What it does
 
 The screen is split into two halves, the upper one rotated 180° so it faces the person across the
@@ -163,8 +193,7 @@ For a release build:
 ./gradlew assembleRelease
 ```
 
-Release output is **unsigned** by default. To produce an installable release you need your own
-keystore and a `signingConfig` — see [Signing](#signing) below.
+Release output is **unsigned** unless you supply your own keystore — see [Signing](#signing) below.
 
 ### Android Studio
 
@@ -190,12 +219,23 @@ adb push gemma-4-E2B-it.litertlm /sdcard/Android/data/com.aire.translate/files/m
 
 ## Signing
 
-`build.gradle.kts` has no release signing config. Create a keystore, then add one — and keep the
-keystore and its passwords **out of version control**. `.gitignore` already excludes `*.jks`,
-`*.keystore`, `keystore.properties` and `signing.properties`.
+Release builds are signed from a `keystore.properties` at the repository root, which is gitignored
+along with the keystore itself:
+
+```properties
+storeFile=aire-upload.jks
+storePassword=…
+keyAlias=upload
+keyPassword=…
+```
+
+Without that file the release build simply goes **unsigned** rather than failing, so cloning and
+building a debug APK works with no setup at all. Generate your own key with `keytool -genkeypair`
+if you want an installable release build.
 
 A leaked upload key lets someone publish builds that Google Play accepts as yours. It is the one
-genuinely catastrophic secret in an Android repository.
+genuinely catastrophic secret in an Android repository — `.gitignore` excludes `*.jks`,
+`*.keystore`, `keystore.properties` and `signing.properties` for that reason.
 
 ---
 
